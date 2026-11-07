@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Host / Juri - Neraca Kebenaran & Misi Planet</title>
+  <!-- KaTeX Local Assets for preview -->
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css">
+  <script src="/vendor/katex/katex.min.js"></script>
+  <script src="/vendor/katex/contrib/auto-render.min.js"></script>
+  <style>
+    :root {
+      --bg: var(--color-bg-dark);
+      --card-bg: var(--color-bg-dark);
+      --card-border: var(--color-text-muted);
+      --text: var(--color-text-on-dark);
+      --text-muted: var(--color-secondary);
+      --primary: var(--color-secondary);
+      --primary-hover: var(--color-secondary);
+      --success: var(--color-secondary);
+      --danger: var(--color-primary);
+      --warning: var(--color-accent);
+      --purple: var(--color-secondary);
+      --team1: var(--color-primary);
+      --team2: var(--color-secondary);
+      --team3: var(--color-secondary);
+      --team4: var(--color-accent);
+      --team5: var(--color-secondary);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--color-bg-dark);
+      border-bottom: 2px solid var(--card-border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .pin-status-pill {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--color-secondary) 15%, transparent);
+      color: var(--success);
+      border: 1px solid color-mix(in srgb, var(--color-secondary) 40%, transparent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pin-status-pill.locked {
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      color: var(--danger);
+      border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+    }
+
+    .header-right {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      background: var(--color-text-muted);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover {
+      background: var(--color-text-muted);
+      border-color: var(--primary);
+    }
+
+    /* MODE TOGGLE PILL */
+    .mode-toggle-container {
+      display: flex;
+      background: var(--color-bg-dark);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 3px;
+      gap: 4px;
+    }
+    .mode-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn.active {
+      background: var(--color-secondary);
+      color: var(--color-text-on-dark);
+    }
+
+    .tabs-bar {
+      background: var(--color-bg-dark);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0 24px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+      padding: 24px;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .tab-content.active { display: block; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 1024px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--color-bg-dark) 30%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 10px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--color-secondary); color: var(--color-text-on-dark); }
+    .btn-primary:hover { background: var(--color-secondary); }
+    .btn-success { background: var(--color-secondary); color: var(--color-text-on-dark); }
+    .btn-success:hover { background: var(--color-secondary); }
+    .btn-danger { background: var(--color-primary); color: var(--color-text-on-dark); }
+    .btn-danger:hover { background: var(--color-primary); }
+    .btn-warning { background: var(--color-accent); color: var(--color-text-on-dark); }
+    .btn-warning:hover { background: var(--color-primary); }
+    .btn-secondary { background: var(--color-text-muted); color: var(--color-text-on-dark); }
+    .btn-secondary:hover { background: var(--color-text-muted); }
+    .btn-purple { background: var(--color-secondary); color: var(--color-text-on-dark); }
+    .btn-purple:hover { background: var(--color-secondary); }
+    .btn-lg { font-size: 16px; padding: 14px 22px; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    input[type="text"], input[type="number"], input[type="password"], textarea, select {
+      background: var(--color-bg-dark);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--color-text-on-dark);
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--primary); }
+
+    .live-status-hero {
+      background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-bg-dark) 100%);
+      border: 2px solid var(--color-secondary);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px color-mix(in srgb, var(--color-bg-dark) 40%, transparent);
+    }
+
+    .hero-stat-box { display: flex; flex-direction: column; gap: 4px; }
+    .hero-stat-label { font-size: 12px; font-weight: 700; color: var(--color-secondary); text-transform: uppercase; }
+    .hero-stat-val { font-size: 28px; font-weight: 900; color: var(--color-text-on-dark); font-family: ui-monospace, SFMono-Regular, monospace; }
+
+    .timer-btn-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .buzzer-manual-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .btn-manual-team {
+      height: 52px;
+      border-radius: 8px;
+      color: var(--color-text-on-dark);
+      font-weight: 800;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    /* PLANET GRID FOR JURY */
+    .host-planet-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .btn-planet-pick {
+      padding: 14px 10px;
+      border-radius: 10px;
+      border: 2px solid var(--color-secondary);
+      background: var(--color-secondary);
+      color: var(--color-text-on-dark);
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .btn-planet-pick:hover:not(:disabled) {
+      background: var(--color-secondary);
+      border-color: var(--color-secondary);
+      transform: translateY(-2px);
+    }
+    .btn-planet-pick:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: var(--color-text-muted);
+      background: var(--color-bg-dark);
+    }
+
+    /* STEP WIDGET */
+    .step-indicator-bar {
+      display: flex;
+      gap: 8px;
+      background: var(--color-bg-dark);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 8px;
+    }
+    .step-pill {
+      flex: 1;
+      text-align: center;
+      padding: 8px 6px;
+      font-size: 12px;
+      font-weight: 800;
+      border-radius: 6px;
+      background: var(--color-text-muted);
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .step-pill.active {
+      background: var(--color-secondary);
+      color: var(--color-text-on-dark);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--color-secondary) 50%, transparent);
+    }
+
+    /* TEAMS TABLE */
+    .team-manage-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      background: var(--color-bg-dark);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+    }
+    .team-pill-indicator { width: 14px; height: 14px; border-radius: 50%; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 12px; border-bottom: 1px solid var(--card-border); text-align: left; }
+    th { background: var(--color-bg-dark); color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+    tr:hover { background: color-mix(in srgb, var(--color-text-on-dark) 2%, transparent); }
+
+    .tag { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; text-transform: uppercase; }
+    .tag-used { background: var(--color-text-muted); color: var(--color-secondary); }
+    .tag-backup { background: var(--color-primary); color: var(--color-accent); }
+    .tag-main { background: var(--color-secondary); color: var(--color-secondary); }
+    .tag-planet { background: var(--color-secondary); color: var(--color-secondary); }
+
+    .log-container { max-height: 500px; overflow-y: auto; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 13px; }
+
+    .pin-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: color-mix(in srgb, var(--color-bg-dark) 95%, transparent);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .pin-box {
+      background: var(--color-bg-dark);
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      padding: 32px 40px;
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+      box-shadow: 0 0 40px color-mix(in srgb, var(--color-secondary) 30%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+  </style>
+  <link rel="stylesheet" href="/cosmic-theme.css">
+</head>
+<body>
+
+  <!-- PIN PROMPT MODAL -->
+  <div class="pin-modal-overlay" id="pin-modal" style="display:none;">
+    <div class="pin-box">
+      <div style="font-size: 54px;">🔒</div>
+      <h2 style="font-size: 24px; font-weight: 800; color: var(--color-text-on-dark);">Autentikasi Juri / Host</h2>
+      <p style="font-size: 14px; color: var(--text-muted);">Masukkan PIN Juri untuk membuka kontrol penuh dan sistem anti-pemalsuan.</p>
+      <input type="password" id="input-pin-login" placeholder="PIN Default: 1234" style="font-size: 24px; text-align: center; letter-spacing: 6px; padding: 12px;" />
+      <button class="btn btn-primary btn-lg" onclick="loginHost()">Buka Akses</button>
+      <span id="pin-error-msg" style="color: var(--danger); font-size: 13px; font-weight: 700; display:none;">PIN Juri Salah!</span>
+    </div>
+  </div>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="header-left">
+      <span style="font-size: 24px;">⚖️</span>
+      <h1 class="title">Panel Juri & Host</h1>
+      <span class="pin-status-pill" id="pin-badge">
+        <span>✓</span> Terautentikasi (Host PIN Valid)
+      </span>
+      <!-- MODE SWITCHER -->
+      <div class="mode-toggle-container">
+        <button class="mode-btn active" id="btn-mode-neraca" onclick="switchRoundMode('neraca')">⚖️ Ronde Neraca</button>
+        <button class="mode-btn" id="btn-mode-planet" onclick="switchRoundMode('planet')">🪐 Ronde 5: Misi Planet</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="/display" target="_blank" class="nav-btn">🖥️ Buka /display</a>
+      <a href="/tablet" target="_blank" class="nav-btn">📱 Buka /tablet</a>
+      <button class="nav-btn" onclick="lockHostSession()">🔒 Kunci Sesi</button>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('tab-live')">🎮 Kontrol Lomba Live</button>
+    <button class="tab-btn" onclick="switchTab('tab-tim')">👥 Kelola Tim & Skor</button>
+    <button class="tab-btn" onclick="switchTab('tab-soal')">📚 Bank Soal</button>
+    <button class="tab-btn" onclick="switchTab('tab-log')">📋 Log Audit & Pengaturan</button>
+  </nav>
+
+  <!-- TAB 1: LIVE COMPETITION CONTROL -->
+  <div id="tab-live" class="tab-content active">
+    <!-- HERO STATS BAR -->
+    <div class="live-status-hero">
+      <div class="hero-stat-box">
+        <span class="hero-stat-label">Mode Ronde</span>
+        <span class="hero-stat-val" id="hero-mode" style="font-size:22px; color:var(--primary);">NERACA</span>
+      </div>
+      <div class="hero-stat-box">
+        <span class="hero-stat-label">Soal / Misi Aktif</span>
+        <span class="hero-stat-val" id="hero-soal-num" style="font-size:22px;">Soal #1</span>
+      </div>
+      <div class="hero-stat-box">
+        <span class="hero-stat-label">Timer Lomba</span>
+        <span class="hero-stat-val" id="hero-timer" style="color: var(--primary);">02:00</span>
+      </div>
+      <div class="hero-stat-box">
+        <span class="hero-stat-label">Status Giliran / Buzzer</span>
+        <span class="hero-stat-val" id="hero-buzzer-status" style="font-size: 20px; color: var(--danger);">Terkunci</span>
+      </div>
+      <div class="hero-stat-box">
+        <span class="hero-stat-label">Kunci Jawaban (HANYA HOST)</span>
+        <span class="hero-stat-val" id="hero-kunci-val" style="color: var(--warning); font-size: 22px;">-</span>
+      </div>
+    </div>
+
+    <!-- 1. KONTROL MODE NERACA -->
+    <div id="panel-neraca-controls" class="grid-2">
+      <div class="card">
+        <div class="card-title">
+          <span>⏱️ Kontrol Timer & Pertanyaan (Neraca)</span>
+          <span id="badge-timer-state" style="font-size:12px; font-weight:700; color:var(--text-muted);">STOPPED</span>
+        </div>
+
+        <div class="timer-btn-row">
+          <button class="btn btn-success" onclick="postTimer('START')">▶ Mulai (Start)</button>
+          <button class="btn btn-warning" onclick="postTimer('PAUSE')">⏸ Jeda (Pause)</button>
+          <button class="btn btn-primary" onclick="postTimer('RESUME')">⏯ Lanjut (Resume)</button>
+          <button class="btn btn-danger" onclick="postTimer('RESET')">⏹ Reset 0s</button>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" style="flex:1;" onclick="adjustTimer(10)">+10 Detik</button>
+          <button class="btn btn-secondary" style="flex:1;" onclick="adjustTimer(-10)">-10 Detik</button>
+          <div style="display:flex; flex:1.5; gap:6px;">
+            <input type="number" id="input-custom-timer" placeholder="Set dtk" style="width:100%;" />
+            <button class="btn btn-secondary" onclick="setTimerManual()">Set</button>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px; padding-top:14px; border-top:1px solid var(--card-border);">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label>Pilih Soal Aktif:</label>
+            <button class="btn btn-warning" style="font-size:12px; padding:6px 12px;" onclick="gantiSoalCadangan()">
+              🔄 Ganti ke Soal Cadangan
+            </button>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <select id="select-soal-aktif" style="flex:1;"></select>
+            <button class="btn btn-primary" onclick="setActiveQuestionFromSelect()">Tampilkan</button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="btn btn-danger" style="flex:1;" onclick="resetSoalAktif()">
+            ♻️ Reset State Soal
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <span>🔔 Kontrol Buzzer & Timbang Manual (Neraca)</span>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-success btn-lg" style="flex:1;" onclick="postBuzzer('OPEN')">
+            🔓 Buka Buzzer (Semua Tim)
+          </button>
+          <button class="btn btn-danger btn-lg" style="flex:1;" onclick="postBuzzer('LOCK')">
+            🔒 Kunci Buzzer
+          </button>
+        </div>
+
+        <div style="margin-top:10px;">
+          <label style="margin-bottom:8px; display:block;">Pilih Pemenang Buzzer Manual (Jika Bel Fisik Digunakan):</label>
+          <div class="buzzer-manual-grid" id="buzzer-manual-grid">
+            <!-- Diisi dinamis via JS dari daftar tim aktif -->
+          </div>
+        </div>
+
+        <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--card-border); display:flex; flex-direction:column; gap:10px;">
+          <label>Input Jawaban Manual Juri (Bila Tim Menjawab Lisan):</label>
+          <div style="display:flex; gap:10px;">
+            <select id="select-team-timbang" style="width:160px;">
+              <!-- Diisi dinamis via JS -->
+            </select>
+            <input type="number" step="any" id="input-jawaban-juri" placeholder="Angka jawaban tim..." style="flex:1;" />
+            <button class="btn btn-success" style="padding:0 24px; font-size:16px;" onclick="submitTimbangManualHost()">
+              ⚖️ Timbang
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. TIM PESERTA RONDE NERACA -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-title">
+          <span>🎯 Tim Peserta Ronde Neraca (Pilih 2 - 8 Tim)</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary" style="font-size:12px; padding:4px 10px;" onclick="pilihTopPesertaNeraca(5)">Pilih 5 Teratas</button>
+            <button class="btn btn-secondary" style="font-size:12px; padding:4px 10px;" onclick="pilihSemuaAktifNeraca(true)">Pilih Semua</button>
+            <button class="btn btn-secondary" style="font-size:12px; padding:4px 10px;" onclick="pilihSemuaAktifNeraca(false)">Kosongkan</button>
+            <button class="btn btn-success" style="font-size:12px; padding:4px 14px;" onclick="simpanPesertaNeraca()">💾 Simpan Peserta</button>
+          </div>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:10px;">
+          Layar tablet tim (<code>/tablet</code>) dan tombol bel hanya akan ditampilkan untuk tim aktif yang dicentang di bawah ini.
+        </p>
+        <div id="neraca-peserta-checklist" style="display:flex; flex-wrap:wrap; gap:10px;">
+          <!-- Diisi dinamis via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. KONTROL MODE MISI PLANET -->
+    <div id="panel-planet-controls" class="grid-2" style="display:none;">
+      <!-- LEFT: PLANET FLOW CONTROL -->
+      <div class="card">
+        <div class="card-title">
+          <span>🪐 Alur Ronde 5: Misi Planet</span>
+          <span id="badge-planet-step-text" style="font-size:12px; font-weight:800; color:var(--color-secondary);">STEP 1</span>
+        </div>
+
+        <!-- Step Indicator Pill Bar -->
+        <div class="step-indicator-bar">
+          <div class="step-pill" id="step-pill-1">1. Giliran</div>
+          <div class="step-pill" id="step-pill-2">2. Meja TAB</div>
+          <div class="step-pill" id="step-pill-3">3. Pilih Planet</div>
+          <div class="step-pill" id="step-pill-4">4. Meja MIC</div>
+          <div class="step-pill" id="step-pill-5">5. Selesai</div>
+        </div>
+
+        <!-- Pilih Tim Giliran -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label style="font-weight:700;">Daftar Giliran Tim (Meja TAB & Meja MIC):</label>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-primary" style="font-size:12px; padding:4px 10px;" onclick="pilihNextPlanetGiliran(false)">⏩ Giliran Berikut (Urut)</button>
+              <button class="btn btn-secondary" style="font-size:12px; padding:4px 10px;" onclick="pilihNextPlanetGiliran(true)">🎲 Giliran Acak</button>
+              <button class="btn btn-warning" style="font-size:12px; padding:4px 10px;" onclick="resetSudahMain()">🔄 Reset Status Main</button>
+            </div>
+          </div>
+          <div class="buzzer-manual-grid" id="planet-giliran-grid">
+            <!-- Diisi dinamis via JS -->
+          </div>
+        </div>
+
+        <!-- Step 2: Meja TAB Controls -->
+        <div style="background:var(--color-bg-dark); border:1px solid var(--card-border); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:var(--color-secondary);">STEP 2: MEJA TAB (Soal Hitungan)</strong>
+            <button class="btn btn-success" onclick="startPlanetTab()">▶ Mulai Soal TAB (120s)</button>
+          </div>
+          <p style="font-size:13px; color:var(--text-muted);">
+            Tim menjawab di tablet. Dinilai otomatis dengan toleransi. Hasil tidak bisa diubah setelah submit.
+          </p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary" style="font-size:12px; flex:1;" onclick="overridePlanetTab('BENAR')">Override TAB: BENAR (+20)</button>
+            <button class="btn btn-secondary" style="font-size:12px; flex:1;" onclick="overridePlanetTab('SALAH')">Override TAB: SALAH (+0)</button>
+          </div>
+        </div>
+
+        <!-- Step 3 & 4: Meja MIC Controls -->
+        <div style="background:var(--color-bg-dark); border:1px solid var(--card-border); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:var(--color-accent);">STEP 4: MEJA MIC (Penilaian Lisan 60s)</strong>
+            <button class="btn btn-secondary" style="font-size:12px;" onclick="togglePapanPlanetLock()">Toggle Lock Papan</button>
+          </div>
+          <p style="font-size:13px; color:var(--text-muted);">
+            Setelah Meja MIC menjawab lisan ke juri, tekan penilaian di bawah:
+          </p>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-success btn-lg" style="flex:1;" onclick="judgePlanetMic('BENAR')">
+              ✅ BENAR (+30 POIN)
+            </button>
+            <button class="btn btn-danger btn-lg" style="flex:1;" onclick="judgePlanetMic('SALAH')">
+              ❌ SALAH (+0 POIN)
+            </button>
+          </div>
+        </div>
+
+        <!-- Reset Turn Button -->
+        <div style="display:flex; gap:10px;">
+          <button class="btn btn-secondary" style="flex:1;" onclick="resetPlanetGiliran()">
+            🔄 Reset Giliran Tim Ini
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: PLANET SELECTION BY JURY -->
+      <div class="card">
+        <div class="card-title">
+          <span>🪐 Pilih Planet (Meja MIC Memilih di Panggung)</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted);">
+          Jika Meja TAB BENAR, Meja MIC memilih 1 planet. Klik planet yang dipilih tim. Paket soal akan terbuka acak dan planet ditandai terpakai.
+        </p>
+
+        <div class="host-planet-grid" id="host-planet-grid">
+          <!-- Dynamically populated 8 planets with disable state -->
+        </div>
+
+        <!-- Question Preview for Host -->
+        <div style="background:var(--color-bg-dark); border:1px solid var(--card-border); border-radius:10px; padding:14px; margin-top:10px; display:flex; flex-direction:column; gap:8px;">
+          <strong style="color:var(--primary); font-size:14px;">Preview Soal & Kunci Jawaban Resmi (Juri Only):</strong>
+          <div id="host-planet-q-preview" style="font-size:14px; color:var(--color-text-on-dark); min-height:50px;">
+            Pilih planet untuk membuka soal Meja MIC...
+          </div>
+          <div id="host-planet-key-preview" style="font-size:16px; font-weight:900; color:var(--warning); padding:8px; background:var(--color-bg-dark); border-radius:6px;">
+            Kunci: -
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: TEAM MANAGEMENT & SCORES -->
+  <div id="tab-tim" class="tab-content">
+    <div class="grid-2">
+      <!-- FORM TAMBAH TIM -->
+      <div class="card">
+        <div class="card-title">
+          <span>➕ Tambah Tim Baru</span>
+        </div>
+        
+        <!-- Tambah 1 Tim -->
+        <div style="margin-bottom:14px;">
+          <label style="display:block; margin-bottom:6px; font-weight:700;">Tambah Satu Tim:</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="input-tambah-tim-nama" placeholder="Nama tim (misal: SMAN 1 Jakarta)" style="flex:1;" />
+            <button class="btn btn-primary" onclick="tambahSatuTim()">Tambah</button>
+          </div>
+        </div>
+
+        <!-- Tempel Banyak Nama -->
+        <div style="margin-bottom:14px; padding-top:14px; border-top:1px solid var(--card-border);">
+          <label style="display:block; margin-bottom:6px; font-weight:700;">Tempel Banyak Nama (Satu per Baris):</label>
+          <textarea id="textarea-tambah-banyak" rows="3" placeholder="Tim Alfa&#10;Tim Beta&#10;Tim Gamma" style="width:100%; margin-bottom:8px;"></textarea>
+          <button class="btn btn-secondary" onclick="tambahBanyakTim()">📥 Tambah Semua Baris</button>
+        </div>
+
+        <!-- Import CSV -->
+        <div style="padding-top:14px; border-top:1px solid var(--card-border);">
+          <label style="display:block; margin-bottom:6px; font-weight:700;">Import Tim dari File CSV:</label>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+            File teks/CSV dengan nama tim per baris (atau kolom pertama).
+          </p>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input type="file" id="file-import-tim-csv" accept=".csv,.txt" style="flex:1; font-size:12px;" />
+            <button class="btn btn-secondary" onclick="importTimCsv()">📁 Import CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KONTROL GLOBAL & KEAMANAN TIM -->
+      <div class="card">
+        <div class="card-title">
+          <span>🛡️ Keamanan & Aksi Global Tim</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted); line-height:1.5;">
+          Saat <strong>Kunci Tim</strong> aktif, penambahan, penghapusan, dan pengubahan nama tim ditolak oleh server (anti-pemalsuan).
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--color-bg-dark); border:1px solid var(--card-border); border-radius:8px;">
+            <div>
+              <div style="font-weight:700;">Status Kunci Tim (Anti-Pemalsuan)</div>
+              <div style="font-size:12px; color:var(--text-muted);">Nama & struktur tim dilindungi dari perubahan</div>
+            </div>
+            <button class="btn btn-warning" id="btn-toggle-kunci-tim" onclick="toggleLockTim()">
+              🔒 Kunci Nama Tim
+            </button>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--color-bg-dark); border:1px solid var(--card-border); border-radius:8px;">
+            <div>
+              <div style="font-weight:700;">Status Sudah Main (Ronde Planet)</div>
+              <div style="font-size:12px; color:var(--text-muted);">Reset agar semua tim dapat giliran kembali</div>
+            </div>
+            <button class="btn btn-secondary" onclick="resetSudahMain()">
+              🔄 Reset Status Main
+            </button>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--color-bg-dark); border:1px solid var(--card-border); border-radius:8px;">
+            <div>
+              <div style="font-weight:700;">Reset Semua Skor Tim</div>
+              <div style="font-size:12px; color:var(--danger);">Kembalikan seluruh skor ke 0 dan hapus log giliran</div>
+            </div>
+            <button class="btn btn-danger" onclick="resetAllScores()">
+              ⚠️ Reset Skor ke 0
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIST TIM DINAMIS -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">
+        <span>📋 Daftar Tim Terdaftar</span>
+        <span id="badge-total-tim" style="font-size:12px; color:var(--text-muted);">Total: 0 tim</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;" id="team-manage-list">
+        <!-- Diisi dinamis via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: BANK SOAL -->
+  <div id="tab-soal" class="tab-content">
+    <div class="grid-2">
+      <!-- FORM TAMBAH / EDIT SOAL -->
+      <div class="card">
+        <div class="card-title">
+          <span id="form-soal-title">➕ Tambah Soal Baru</span>
+          <button class="btn btn-secondary" style="font-size:12px;" onclick="resetFormSoal()">Form Baru</button>
+        </div>
+
+        <input type="hidden" id="soal-edit-id" value="" />
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Mode Ronde:</label>
+            <select id="soal-ronde" onchange="togglePlanetSelectVisibility()">
+              <option value="neraca">Ronde Neraca</option>
+              <option value="planet">Ronde 5: Misi Planet</option>
+            </select>
+          </div>
+          <div class="form-group" id="group-soal-planet">
+            <label>Paket Planet (Khusus Ronde Planet):</label>
+            <select id="soal-planet">
+              <option value="">Bukan Soal Planet (Meja TAB / Umum)</option>
+              <option value="Merkurius">Merkurius</option>
+              <option value="Venus">Venus</option>
+              <option value="Bumi">Bumi</option>
+              <option value="Mars">Mars</option>
+              <option value="Jupiter">Jupiter</option>
+              <option value="Saturnus">Saturnus</option>
+              <option value="Uranus">Uranus</option>
+              <option value="Neptunus">Neptunus</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Mata Pelajaran:</label>
+            <select id="soal-mapel">
+              <option value="Matematika">Matematika</option>
+              <option value="Fisika">Fisika</option>
+              <option value="Kimia">Kimia</option>
+              <option value="Astronomi">Astronomi</option>
+              <option value="Umum">Umum</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Kunci Jawaban (Angka):</label>
+            <input type="number" step="any" id="soal-kunci" placeholder="Contoh: 294" required />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Satuan (Opsional):</label>
+            <input type="text" id="soal-satuan" placeholder="Contoh: Joule, kg, m/s" />
+          </div>
+          <div class="form-group">
+            <label>Toleransi (±):</label>
+            <input type="number" step="any" id="soal-toleransi" value="0.01" />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Waktu Tampil (Detik):</label>
+            <input type="number" id="soal-waktu-tampil" value="60" />
+          </div>
+          <div class="form-group">
+            <label>Waktu Total Kerja (Detik):</label>
+            <input type="number" id="soal-waktu-kerja" value="120" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Teks Soal (Dukung LaTeX KaTeX):</label>
+          <textarea id="soal-teks" rows="4" placeholder="Tuliskan teks soal di sini..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Upload Gambar Soal (Opsional):</label>
+          <input type="file" id="soal-gambar-file" accept="image/*" />
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="soal-is-cadangan" style="width:18px; height:18px;" />
+          <label for="soal-is-cadangan" style="text-transform:none; font-size:14px; cursor:pointer;">
+            Tandai sebagai Soal Cadangan
+          </label>
+        </div>
+
+        <!-- LIVE PREVIEW BOX -->
+        <div style="background:var(--color-bg-dark); border:1px solid var(--card-border); border-radius:8px; padding:12px;">
+          <label style="margin-bottom:6px; display:block;">Live KaTeX Preview:</label>
+          <div id="soal-preview-area" style="font-size:16px; color:var(--color-text-on-dark); min-height:40px;">
+            Ketik soal di atas untuk melihat preview rumus...
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" onclick="simpanSoal()">💾 Simpan Soal</button>
+      </div>
+
+      <!-- DAFTAR SOAL TABLE -->
+      <div class="card">
+        <div class="card-title">
+          <span>📋 Daftar Bank Soal</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary" style="font-size:12px;" onclick="exportSoalCsv()">Export CSV</button>
+            <label class="btn btn-secondary" style="font-size:12px; cursor:pointer; margin:0;">
+              Import CSV
+              <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display:none;" onchange="importSoalCsv(event)" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Filter & Search (Termasuk Filter Ronde & Planet) -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+          <select id="filter-ronde" onchange="loadBankSoal()">
+            <option value="SEMUA">Semua Ronde</option>
+            <option value="neraca">Ronde Neraca</option>
+            <option value="planet">Ronde Planet</option>
+          </select>
+          <select id="filter-planet" onchange="loadBankSoal()">
+            <option value="SEMUA">Semua Planet</option>
+            <option value="Merkurius">Merkurius</option>
+            <option value="Venus">Venus</option>
+            <option value="Bumi">Bumi</option>
+            <option value="Mars">Mars</option>
+            <option value="Jupiter">Jupiter</option>
+            <option value="Saturnus">Saturnus</option>
+            <option value="Uranus">Uranus</option>
+            <option value="Neptunus">Neptunus</option>
+          </select>
+          <select id="filter-mapel" onchange="loadBankSoal()">
+            <option value="SEMUA">Semua Mapel</option>
+            <option value="Matematika">Matematika</option>
+            <option value="Fisika">Fisika</option>
+            <option value="Kimia">Kimia</option>
+            <option value="Astronomi">Astronomi</option>
+          </select>
+        </div>
+        <input type="text" id="search-soal" placeholder="Cari teks soal..." oninput="loadBankSoal()" style="width:100%;" />
+
+        <div style="max-height:550px; overflow-y:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px;">ID</th>
+                <th>Ronde</th>
+                <th>Mapel/Planet</th>
+                <th>Soal</th>
+                <th>Kunci</th>
+                <th style="text-align:right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="bank-soal-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: AUDIT LOG & SETTINGS -->
+  <div id="tab-log" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">
+          <span>⚙️ Pengaturan Global & Keamanan</span>
+        </div>
+
+        <!-- PENGATURAN MODE SOAL DIPAKAI ULANG (STRICT SECURITY) -->
+        <div style="background:var(--color-bg-dark); border:1px solid var(--color-secondary); border-radius:10px; padding:14px; display:flex; align-items:flex-start; gap:12px;">
+          <input type="checkbox" id="setting-reuse-mode" style="width:22px; height:22px; margin-top:2px;" />
+          <div>
+            <label for="setting-reuse-mode" style="font-size:14px; color:var(--color-text-on-dark); cursor:pointer;">
+              🔒 Mode Soal Dipakai Ulang (Anti-Bocoran)
+            </label>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:4px; line-height:1.4;">
+              Jika aktif, sudut neraca saat jawaban salah dibuat <strong>tetap dan tidak menunjukkan arah</strong> (tidak membocorkan apakah jawaban lebih besar atau lebih kecil dari kunci) agar adil bagi tim berikutnya.
+            </p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Poin TAB (Planet):</label>
+            <input type="number" id="setting-poin-tab" value="20" />
+          </div>
+          <div class="form-group">
+            <label>Poin MIC (Planet):</label>
+            <input type="number" id="setting-poin-mic" value="30" />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Waktu Meja TAB (Detik):</label>
+            <input type="number" id="setting-waktu-tab" value="120" />
+          </div>
+          <div class="form-group">
+            <label>Waktu Meja MIC (Detik):</label>
+            <input type="number" id="setting-waktu-mic" value="60" />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Poin Neraca:</label>
+            <input type="number" id="setting-poin" value="10" />
+          </div>
+          <div class="form-group">
+            <label>Toleransi Default Global:</label>
+            <input type="number" step="any" id="setting-toleransi" value="0.01" />
+          </div>
+        </div>
+
+        <div class="form-group" style="padding-top:10px; border-top:1px solid var(--card-border);">
+          <label>Ganti PIN Juri Baru:</label>
+          <input type="password" id="setting-pin-baru" placeholder="Minimal 4 karakter (kosongkan jika tidak diubah)" />
+        </div>
+
+        <button class="btn btn-primary" onclick="simpanPengaturan()">💾 Terapkan Pengaturan</button>
+
+        <div style="padding-top:14px; border-top:1px solid var(--card-border); display:flex; flex-direction:column; gap:10px;">
+          <label>Backup Database & Audit Log:</label>
+          <div style="display:flex; gap:10px;">
+            <a href="/api/export-db" class="btn btn-secondary" style="flex:1;">📥 Unduh lomba.db</a>
+            <a href="/api/export-log-csv" class="btn btn-secondary" style="flex:1;">📊 Unduh Log CSV</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIT LOG LIST -->
+      <div class="card">
+        <div class="card-title">
+          <span>📜 Riwayat Aktivitas & Audit Log</span>
+          <button class="btn btn-secondary" style="font-size:12px;" onclick="loadState()">Refresh Log</button>
+        </div>
+
+        <div class="log-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>Tim</th>
+                <th>Aksi</th>
+                <th>Jawaban</th>
+                <th>Hasil</th>
+              </tr>
+            </thead>
+            <tbody id="log-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ----------------------------------------------------------------------
+    // SESSION AUTHENTICATION
+    // ----------------------------------------------------------------------
+    let currentHostPin = sessionStorage.getItem('neraca_host_pin') || '';
+    const pinModal = document.getElementById('pin-modal');
+    const pinBadge = document.getElementById('pin-badge');
+    const pinErrorMsg = document.getElementById('pin-error-msg');
+    const inputPin = document.getElementById('input-pin-login');
+    const teamColors = ['var(--color-team1)', 'var(--color-team2)', 'var(--color-team3)', 'var(--color-team4)', 'var(--color-team5)', 'var(--color-team6)', 'var(--color-team7)', 'var(--color-team8)', 'var(--color-team9)', 'var(--color-team10)'];
+    function getTeamColor(id) { return teamColors[Math.abs(id) % teamColors.length]; }
+    const planetList = ['Merkurius', 'Venus', 'Bumi', 'Mars', 'Jupiter', 'Saturnus', 'Uranus', 'Neptunus'];
+
+    function checkAuth() {
+      if (!currentHostPin) {
+        pinModal.style.display = 'flex';
+        pinBadge.className = 'pin-status-pill locked';
+        pinBadge.innerHTML = '<span>✕</span> Terkunci (Perlu PIN)';
+      } else {
+        pinModal.style.display = 'none';
+        pinBadge.className = 'pin-status-pill';
+        pinBadge.innerHTML = '<span>✓</span> Terautentikasi (Host PIN Valid)';
+      }
+    }
+
+    async function loginHost() {
+      const pin = inputPin.value.trim();
+      if (!pin) return;
+
+      try {
+        const res = await fetch('/api/host/verify-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentHostPin = pin;
+          sessionStorage.setItem('neraca_host_pin', pin);
+          pinModal.style.display = 'none';
+          pinErrorMsg.style.display = 'none';
+          checkAuth();
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'AUTH_HOST', payload: { pin: currentHostPin } }));
+          }
+          loadState();
+          loadBankSoal();
+        } else {
+          pinErrorMsg.style.display = 'block';
+        }
+      } catch (e) {
+        alert('Gagal menghubungi server: ' + e.message);
+      }
+    }
+
+    function lockHostSession() {
+      sessionStorage.removeItem('neraca_host_pin');
+      currentHostPin = '';
+      checkAuth();
+    }
+
+    async function authFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      options.headers['x-host-pin'] = currentHostPin;
+      const res = await fetch(url, options);
+      if (res.status === 401) {
+        lockHostSession();
+        throw new Error('Sesi PIN Juri tidak valid.');
+      }
+      return res;
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+      if (tabId === 'tab-soal') loadBankSoal();
+    }
+
+    // ----------------------------------------------------------------------
+    // WEBSOCKET CLIENT & STATE SYNC
+    // ----------------------------------------------------------------------
+    let ws = null;
+    let fullState = null;
+
+    function connectWs() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}`;
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        if (currentHostPin) {
+          ws.send(JSON.stringify({ type: 'AUTH_HOST', payload: { pin: currentHostPin } }));
+        }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.data) {
+            fullState = msg.data;
+            renderAll(msg.data);
+          }
+        } catch (e) {}
+      };
+
+      ws.onclose = () => setTimeout(connectWs, 2000);
+    }
+
+    async function loadState() {
+      try {
+        const res = await authFetch('/api/state');
+        const data = await res.json();
+        fullState = data;
+        renderAll(data);
+      } catch (e) {}
+    }
+
+    // ----------------------------------------------------------------------
+    // RENDER LOGIC
+    // ----------------------------------------------------------------------
+    function renderAll(full) {
+      const s = full.state;
+      const teams = full.teams || [];
+      const q = full.activeQuestion;
+      const soalPlanet = full.soalPlanet;
+      const usedPlanets = full.usedPlanets || [];
+      const isPlanet = (s.mode_ronde === 'planet');
+
+      // Mode Switcher Pills
+      document.getElementById('btn-mode-neraca').className = `mode-btn ${!isPlanet ? 'active' : ''}`;
+      document.getElementById('btn-mode-planet').className = `mode-btn ${isPlanet ? 'active' : ''}`;
+
+      // Panel toggles
+      document.getElementById('panel-neraca-controls').style.display = !isPlanet ? 'grid' : 'none';
+      document.getElementById('panel-planet-controls').style.display = isPlanet ? 'grid' : 'none';
+
+      // Hero Stats
+      document.getElementById('hero-mode').textContent = isPlanet ? 'MISI PLANET' : 'NERACA';
+
+      if (isPlanet && s.planet_step === 4 && soalPlanet) {
+        document.getElementById('hero-soal-num').textContent = `Planet: ${s.planet_terpilih || 'MIC'}`;
+        document.getElementById('hero-kunci-val').textContent = `${soalPlanet.kunci} ${soalPlanet.satuan || ''}`;
+      } else if (q) {
+        document.getElementById('hero-soal-num').textContent = `Soal #${q.id} ${q.cadangan ? '(CADANGAN)' : ''}`;
+        document.getElementById('hero-kunci-val').textContent = `${q.kunci !== undefined ? q.kunci : '-'} ${q.satuan || ''}`;
+      } else {
+        document.getElementById('hero-soal-num').textContent = '-';
+        document.getElementById('hero-kunci-val').textContent = '-';
+      }
+
+      const remaining = s.sisa_waktu !== undefined ? s.sisa_waktu : 120;
+      const mins = Math.floor(remaining / 60);
+      const secs = Math.floor(remaining % 60);
+      document.getElementById('hero-timer').textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      // Buzzer / Giliran status
+      const buzzerEl = document.getElementById('hero-buzzer-status');
+      if (isPlanet) {
+        buzzerEl.textContent = `TIM ${s.tim_giliran || 1} (STEP ${s.planet_step || 1})`;
+        buzzerEl.style.color = 'var(--primary)';
+      } else if (s.buzzer_terbuka) {
+        buzzerEl.textContent = 'TERBUKA';
+        buzzerEl.style.color = 'var(--success)';
+      } else if (s.buzzer_pemenang) {
+        buzzerEl.textContent = `TIM ${s.buzzer_pemenang} (MENJAWAB)`;
+        buzzerEl.style.color = 'var(--warning)';
+      } else {
+        buzzerEl.textContent = 'TERKUNCI';
+        buzzerEl.style.color = 'var(--danger)';
+      }
+
+      // Planet Step Indicators
+      if (isPlanet) {
+        document.getElementById('badge-planet-step-text').textContent = `STEP ${s.planet_step || 1}`;
+        for (let i = 1; i <= 5; i++) {
+          const pill = document.getElementById(`step-pill-${i}`);
+          if (pill) {
+            pill.className = `step-pill ${(s.planet_step === i) ? 'active' : ''}`;
+          }
+        }
+        renderHostPlanetGrid(usedPlanets, s.planet_terpilih);
+
+        // Host Planet Question Preview
+        if (soalPlanet) {
+          document.getElementById('host-planet-q-preview').innerHTML = soalPlanet.soal;
+          document.getElementById('host-planet-key-preview').textContent = `KUNCI: ${soalPlanet.kunci} ${soalPlanet.satuan || ''} (Toleransi: ±${soalPlanet.toleransi || 0})`;
+        } else {
+          document.getElementById('host-planet-q-preview').textContent = 'Pilih planet untuk membuka soal Meja MIC...';
+          document.getElementById('host-planet-key-preview').textContent = 'Kunci: -';
+        }
+      }
+
+      // Settings Fields
+      document.getElementById('setting-poin').value = s.poin_soal || 10;
+      document.getElementById('setting-toleransi').value = s.toleransi_global || 0.01;
+      document.getElementById('setting-poin-tab').value = s.poin_planet_tab || 20;
+      document.getElementById('setting-poin-mic').value = s.poin_planet_mic || 30;
+      document.getElementById('setting-waktu-tab').value = s.waktu_planet_tab || 120;
+      document.getElementById('setting-waktu-mic').value = s.waktu_planet_mic || 60;
+      document.getElementById('setting-reuse-mode').checked = Boolean(s.mode_soal_dipakai_ulang);
+
+      renderBuzzerManualButtons(teams, s);
+      renderSelectTeamTimbang(teams);
+      renderNeracaPesertaChecklist(teams);
+      renderPlanetGiliran(teams, s);
+      renderTeamManagement(teams, s.kunci_tim);
+
+      // Lock Teams Button
+      const lockTimBtn = document.getElementById('btn-toggle-kunci-tim');
+      if (lockTimBtn) {
+        if (s.kunci_tim) {
+          lockTimBtn.textContent = '🔓 Buka Kunci Tim';
+          lockTimBtn.className = 'btn btn-danger';
+        } else {
+          lockTimBtn.textContent = '🔒 Kunci Nama Tim';
+          lockTimBtn.className = 'btn btn-warning';
+        }
+      }
+    }
+
+    function renderBuzzerManualButtons(teams, s) {
+      const container = document.getElementById('buzzer-manual-grid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const pesertaNeraca = teams.filter(t => t.aktif && t.peserta_neraca);
+      if (pesertaNeraca.length === 0) {
+        container.innerHTML = '<span style="font-size:12px; color:var(--text-muted); grid-column:1/-1;">Belum ada tim peserta Neraca yang aktif. Pilih di checklist bawah.</span>';
+        return;
+      }
+
+      pesertaNeraca.forEach(t => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-manual-team';
+        btn.style.background = getTeamColor(t.id);
+        btn.textContent = `TIM ${t.id}: ${t.nama}`;
+        btn.onclick = () => selectManualBuzzer(t.id);
+        container.appendChild(btn);
+      });
+    }
+
+    function renderSelectTeamTimbang(teams) {
+      const sel = document.getElementById('select-team-timbang');
+      if (!sel) return;
+      const currVal = sel.value;
+      sel.innerHTML = '';
+
+      const pesertaNeraca = teams.filter(t => t.aktif && t.peserta_neraca);
+      pesertaNeraca.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = `Tim ${t.id} (${t.nama})`;
+        sel.appendChild(opt);
+      });
+
+      if (currVal && sel.querySelector(`option[value="${currVal}"]`)) {
+        sel.value = currVal;
+      }
+    }
+
+    function renderNeracaPesertaChecklist(teams) {
+      const container = document.getElementById('neraca-peserta-checklist');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const aktifTeams = teams.filter(t => t.aktif);
+      if (aktifTeams.length === 0) {
+        container.innerHTML = '<span style="font-size:12px; color:var(--text-muted);">Tidak ada tim aktif. Aktifkan tim di tab Kelola Tim.</span>';
+        return;
+      }
+
+      aktifTeams.forEach(t => {
+        const label = document.createElement('label');
+        label.style.display = 'inline-flex';
+        label.style.alignItems = 'center';
+        label.style.gap = '8px';
+        label.style.padding = '8px 14px';
+        label.style.background = 'var(--color-bg-dark)';
+        label.style.border = '1px solid var(--card-border)';
+        label.style.borderRadius = '8px';
+        label.style.cursor = 'pointer';
+
+        const color = getTeamColor(t.id);
+        label.innerHTML = `
+          <input type="checkbox" class="cb-peserta-neraca" value="${t.id}" ${t.peserta_neraca ? 'checked' : ''} style="width:18px; height:18px;" />
+          <span class="team-pill-indicator" style="background:${color}; width:12px; height:12px;"></span>
+          <span style="font-weight:700; font-size:14px; color:var(--color-text-on-dark);">TIM ${t.id} - ${t.nama}</span>
+        `;
+        container.appendChild(label);
+      });
+    }
+
+    function renderPlanetGiliran(teams, state) {
+      const container = document.getElementById('planet-giliran-grid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const aktifTeams = teams.filter(t => t.aktif);
+      if (aktifTeams.length === 0) {
+        container.innerHTML = '<span style="font-size:12px; color:var(--text-muted); grid-column:1/-1;">Belum ada tim aktif.</span>';
+        return;
+      }
+
+      aktifTeams.forEach(t => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-manual-team';
+        const isCurrent = (state.tim_giliran === t.id);
+        const sudahMain = Boolean(t.sudah_main);
+        const color = getTeamColor(t.id);
+
+        btn.style.background = sudahMain ? 'var(--color-bg-dark)' : color;
+        btn.style.border = isCurrent ? '3px solid var(--color-accent)' : '1px solid transparent';
+        btn.style.opacity = sudahMain && !isCurrent ? '0.65' : '1';
+        btn.style.display = 'flex';
+        btn.style.flexDirection = 'column';
+        btn.style.alignItems = 'center';
+        btn.style.gap = '2px';
+        btn.style.padding = '8px 12px';
+
+        btn.innerHTML = `
+          <span style="font-weight:900; font-size:14px;">TIM ${t.id}: ${t.nama}</span>
+          <span style="font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px; background:${isCurrent ? 'var(--color-accent)' : (sudahMain ? 'var(--color-secondary)' : 'var(--color-bg-dark)')}; color:var(--color-text-on-dark);">
+            ${isCurrent ? '★ SEDANG MAIN' : (sudahMain ? '✓ SUDAH MAIN' : 'BELUM MAIN')}
+          </span>
+        `;
+        btn.onclick = () => setPlanetTimGiliran(t.id);
+        container.appendChild(btn);
+      });
+    }
+
+    function renderTeamManagement(teams, isLocked) {
+      const container = document.getElementById('team-manage-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const totalBadge = document.getElementById('badge-total-tim');
+      if (totalBadge) {
+        totalBadge.textContent = `Total: ${teams.length} tim (${teams.filter(t => t.aktif).length} aktif)`;
+      }
+
+      teams.forEach((t, idx) => {
+        const item = document.createElement('div');
+        item.className = 'team-manage-item';
+        const color = getTeamColor(t.id);
+
+        item.innerHTML = `
+          <div style="display:flex; align-items:center; gap:8px; flex:1.2;">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="ubahUrutanTim(${t.id}, 'naik')" title="Pindah Naik" ${idx === 0 ? 'disabled' : ''}>▲</button>
+              <button class="btn btn-secondary" style="padding:2px 6px; font-size:10px;" onclick="ubahUrutanTim(${t.id}, 'turun')" title="Pindah Turun" ${idx === teams.length - 1 ? 'disabled' : ''}>▼</button>
+            </div>
+            <span class="team-pill-indicator" style="background:${color};"></span>
+            <span style="font-weight:900; font-size:15px; min-width:55px;">TIM ${t.id}</span>
+            <input type="text" id="team-name-input-${t.id}" value="${t.nama}" ${isLocked ? 'disabled' : ''} style="flex:1; min-width:140px;" />
+            <button class="btn btn-secondary" style="font-size:12px; padding:6px 10px;" onclick="renameTeam(${t.id})" ${isLocked ? 'disabled' : ''}>
+              Simpan
+            </button>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <button class="btn ${t.aktif ? 'btn-secondary' : 'btn-warning'}" style="font-size:11px; padding:4px 8px;" onclick="toggleAktifTim(${t.id})">
+              ${t.aktif ? '🟢 Aktif' : '⚪ Nonaktif'}
+            </button>
+            <span class="tag ${t.sudah_main ? 'tag-main' : 'tag-used'}" style="font-size:10px;">
+              ${t.sudah_main ? 'SUDAH MAIN' : 'BELUM MAIN'}
+            </span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:13px; color:var(--text-muted); font-weight:700;">Skor:</span>
+            <span style="font-size:20px; font-weight:900; color:var(--primary); font-family:monospace; min-width:35px; text-align:right;">${t.skor}</span>
+            <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="adjustScore(${t.id}, 10)">+10</button>
+            <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="adjustScore(${t.id}, -10)">-10</button>
+            <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="setCustomScore(${t.id})">Set</button>
+            <button class="btn ${t.terkunci ? 'btn-danger' : 'btn-secondary'}" style="font-size:11px; padding:4px 8px;" onclick="unlockQuestionTeam(${t.id})">
+              ${t.terkunci ? '🔓 Buka Soal' : 'Normal'}
+            </button>
+            <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="hapusTim(${t.id})" ${isLocked ? 'disabled' : ''} title="Hapus Tim">
+              🗑️
+            </button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderHostPlanetGrid(usedPlanets, chosenPlanet) {
+      const grid = document.getElementById('host-planet-grid');
+      grid.innerHTML = '';
+
+      planetList.forEach(p => {
+        const isUsed = usedPlanets.includes(p);
+        const isChosen = (chosenPlanet === p);
+
+        const btn = document.createElement('button');
+        btn.className = 'btn-planet-pick';
+        btn.disabled = isUsed && !isChosen;
+        if (isChosen) {
+          btn.style.borderColor = 'var(--color-accent)';
+          btn.style.background = 'var(--color-primary)';
+        }
+
+        btn.innerHTML = `
+          <span>🪐</span>
+          <span>${p}</span>
+          <span style="font-size:10px; font-weight:700; color:${isUsed ? 'var(--color-text-muted)' : 'var(--color-secondary)'};">
+            ${isChosen ? 'DIPILIH' : (isUsed ? 'TERPAKAI' : 'TERSEDIA')}
+          </span>
+        `;
+        btn.onclick = () => pilihPlanet(p);
+        grid.appendChild(btn);
+      });
+    }
+
+    // ----------------------------------------------------------------------
+    // ACTIONS & CONTROLS
+    // ----------------------------------------------------------------------
+    async function switchRoundMode(mode) {
+      await authFetch('/api/host/planet/set-mode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode })
+      });
+      loadState();
+    }
+
+    async function setPlanetTimGiliran(teamNo) {
+      await authFetch('/api/host/planet/tim-giliran', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ team: teamNo })
+      });
+      loadState();
+    }
+
+    async function startPlanetTab() {
+      await authFetch('/api/host/planet/start-tab', { method: 'POST' });
+      loadState();
+    }
+
+    async function overridePlanetTab(hasil) {
+      await authFetch('/api/host/planet/override-tab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hasil })
+      });
+      loadState();
+    }
+
+    async function pilihPlanet(planet) {
+      try {
+        const res = await authFetch('/api/host/planet/pilih-planet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ planet })
+        });
+        const d = await res.json();
+        if (!d.success) alert(d.message);
+        loadState();
+      } catch (e) { alert(e.message); }
+    }
+
+    async function judgePlanetMic(hasil) {
+      await authFetch('/api/host/planet/mic-judge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hasil })
+      });
+      loadState();
+    }
+
+    async function resetPlanetGiliran() {
+      if (confirm('Reset giliran tim ini?')) {
+        await authFetch('/api/host/planet/reset-giliran', { method: 'POST' });
+        loadState();
+      }
+    }
+
+    async function togglePapanPlanetLock() {
+      await authFetch('/api/host/planet/toggle-papan-lock', { method: 'POST' });
+      loadState();
+    }
+
+    // Timer Controls
+    async function postTimer(action) {
+      await authFetch('/api/host/timer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action })
+      });
+    }
+
+    async function adjustTimer(delta) {
+      await authFetch('/api/host/timer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'ADJUST', adjustment: delta })
+      });
+    }
+
+    async function setTimerManual() {
+      const val = document.getElementById('input-custom-timer').value;
+      if (!val) return;
+      await authFetch('/api/host/timer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'ADJUST', sisa_waktu: parseFloat(val) })
+      });
+    }
+
+    // Buzzer Controls (Neraca)
+    async function postBuzzer(action) {
+      await authFetch('/api/host/buzzer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action })
+      });
+    }
+
+    async function selectManualBuzzer(teamNo) {
+      await authFetch('/api/host/buzzer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'SELECT_MANUAL', team: teamNo })
+      });
+    }
+
+    async function submitTimbangManualHost() {
+      const teamNo = parseInt(document.getElementById('select-team-timbang').value, 10);
+      const val = parseFloat(document.getElementById('input-jawaban-juri').value);
+      if (isNaN(val)) return alert('Masukkan angka jawaban terlebih dahulu!');
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'TIMBANG_SUBMIT',
+          payload: { team: teamNo, jawaban: val }
+        }));
+        document.getElementById('input-jawaban-juri').value = '';
+      }
+    }
+
+    async function gantiSoalCadangan() {
+      if (confirm('Ganti soal aktif ke soal cadangan sekarang?')) {
+        const res = await authFetch('/api/host/question/ganti-cadangan', { method: 'POST' });
+        const data = await res.json();
+        if (!data.success) alert(data.message || 'Gagal mengganti soal cadangan');
+      }
+    }
+
+    async function resetSoalAktif() {
+      if (confirm('Reset state soal aktif?')) {
+        await authFetch('/api/host/question/reset', { method: 'POST' });
+      }
+    }
+
+    // Peserta Neraca Actions
+    function pilihTopPesertaNeraca(count) {
+      const cbs = document.querySelectorAll('.cb-peserta-neraca');
+      cbs.forEach((cb, idx) => {
+        cb.checked = (idx < count);
+      });
+    }
+
+    function pilihSemuaAktifNeraca(val) {
+      const cbs = document.querySelectorAll('.cb-peserta-neraca');
+      cbs.forEach(cb => { cb.checked = Boolean(val); });
+    }
+
+    async function simpanPesertaNeraca() {
+      const cbs = document.querySelectorAll('.cb-peserta-neraca:checked');
+      const ids = Array.from(cbs).map(cb => parseInt(cb.value, 10));
+      if (ids.length < 2) {
+        return alert('Pilih minimal 2 tim sebagai peserta Ronde Neraca!');
+      }
+      if (ids.length > 8) {
+        return alert('Maksimal 8 tim untuk peserta Ronde Neraca!');
+      }
+
+      try {
+        const res = await authFetch('/api/host/neraca/set-peserta', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids })
+        });
+        const d = await res.json();
+        if (d.success) {
+          alert(`Peserta Ronde Neraca berhasil disimpan (${ids.length} tim).`);
+          loadState();
+        } else {
+          alert(d.message || 'Gagal menyimpan peserta neraca');
+        }
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    // Planet Giliran Actions
+    async function pilihNextPlanetGiliran(acak = false) {
+      if (!fullState || !fullState.teams) return;
+      const aktifBelumMain = fullState.teams.filter(t => t.aktif && !t.sudah_main);
+      if (aktifBelumMain.length === 0) {
+        if (confirm('Semua tim aktif sudah main! Apakah ingin me-reset status main sekarang?')) {
+          await resetSudahMain();
+        }
+        return;
+      }
+
+      let chosen;
+      if (acak) {
+        const idx = Math.floor(Math.random() * aktifBelumMain.length);
+        chosen = aktifBelumMain[idx];
+      } else {
+        chosen = aktifBelumMain[0];
+      }
+
+      if (chosen) {
+        await setPlanetTimGiliran(chosen.id);
+      }
+    }
+
+    async function resetSudahMain() {
+      if (confirm('Reset status "Sudah Main" untuk semua tim di Ronde Planet?')) {
+        try {
+          const res = await authFetch('/api/host/tim/reset-sudah-main', { method: 'POST' });
+          const d = await res.json();
+          if (d.success) loadState();
+          else alert(d.message || 'Gagal reset');
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+    }
+
+    // Team Actions
+    async function toggleLockTim() {
+      try {
+        const res = await authFetch('/api/host/tim/toggle-lock', { method: 'POST' });
+        const d = await res.json();
+        if (d.success) loadState();
+        else alert(d.message || 'Gagal toggle kunci tim');
+      } catch (e) { alert(e.message); }
+    }
+
+    async function tambahSatuTim() {
+      const input = document.getElementById('input-tambah-tim-nama');
+      const nama = input.value.trim();
+      if (!nama) return alert('Masukkan nama tim terlebih dahulu!');
+      try {
+        const res = await authFetch('/api/host/tim/tambah', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nama })
+        });
+        const d = await res.json();
+        if (d.success) {
+          input.value = '';
+          loadState();
+        } else {
+          alert(d.message || 'Gagal menambah tim');
+        }
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    async function tambahBanyakTim() {
+      const textarea = document.getElementById('textarea-tambah-banyak');
+      const lines = textarea.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length === 0) return alert('Masukkan minimal satu nama tim!');
+      try {
+        const res = await authFetch('/api/host/tim/tambah-banyak', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ names: lines })
+        });
+        const d = await res.json();
+        if (d.success) {
+          textarea.value = '';
+          alert(`${lines.length} tim berhasil ditambahkan.`);
+          loadState();
+        } else {
+          alert(d.message || 'Gagal menambah banyak tim');
+        }
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    async function importTimCsv() {
+      const fileInput = document.getElementById('file-import-tim-csv');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        return alert('Pilih file CSV terlebih dahulu!');
+      }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/).map(l => {
+          let trimmed = l.trim();
+          if (!trimmed) return '';
+          if (trimmed.startsWith('"')) {
+            const match = trimmed.match(/^"([^"]+)"/);
+            return match ? match[1].trim() : trimmed;
+          }
+          return trimmed.split(',')[0].trim();
+        }).filter(l => l.length > 0 && l.toLowerCase() !== 'nama' && l.toLowerCase() !== 'nama_tim' && l.toLowerCase() !== 'name');
+
+        if (lines.length === 0) return alert('File CSV tidak berisi data nama tim!');
+        try {
+          const res = await authFetch('/api/host/tim/tambah-banyak', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ names: lines })
+          });
+          const d = await res.json();
+          if (d.success) {
+            fileInput.value = '';
+            alert(`${lines.length} tim berhasil di-import dari CSV.`);
+            loadState();
+          } else {
+            alert(d.message || 'Gagal import tim');
+          }
+        } catch (err) {
+          alert(err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    async function ubahUrutanTim(id, arah) {
+      try {
+        const res = await authFetch('/api/host/tim/ubah-urutan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, arah })
+        });
+        const d = await res.json();
+        if (d.success) loadState();
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    async function toggleAktifTim(id) {
+      try {
+        const res = await authFetch('/api/host/tim/toggle-aktif', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        const d = await res.json();
+        if (d.success) loadState();
+        else alert(d.message);
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    async function hapusTim(id) {
+      if (!confirm(`Yakin ingin menghapus Tim ${id}? Tim hanya bisa dihapus jika skor 0 dan belum memiliki riwayat log.`)) return;
+      try {
+        const res = await authFetch(`/api/host/tim/${id}`, { method: 'DELETE' });
+        const d = await res.json();
+        if (d.success) {
+          alert(`Tim ${id} berhasil dihapus.`);
+          loadState();
+        } else {
+          alert(d.message || 'Gagal menghapus tim');
+        }
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    async function renameTeam(teamNo) {
+      const nameInput = document.getElementById(`team-name-input-${teamNo}`);
+      const newName = nameInput.value.trim();
+      if (!newName) return;
+      try {
+        const res = await authFetch('/api/host/tim/rename', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ team_no: teamNo, nama: newName })
+        });
+        const d = await res.json();
+        if (d.success) {
+          alert(`Nama Tim ${teamNo} diperbarui.`);
+          loadState();
+        } else alert(d.message);
+      } catch (e) { alert(e.message); }
+    }
+
+    async function adjustScore(teamNo, delta) {
+      await authFetch('/api/host/tim/koreksi-skor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ team_no: teamNo, delta })
+      });
+      loadState();
+    }
+
+    async function setCustomScore(teamNo) {
+      const skor = prompt(`Masukkan skor baru untuk Tim ${teamNo}:`);
+      if (skor === null || isNaN(parseInt(skor, 10))) return;
+      await authFetch('/api/host/tim/koreksi-skor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ team_no: teamNo, skor_baru: parseInt(skor, 10) })
+      });
+      loadState();
+    }
+
+    async function unlockQuestionTeam(teamNo) {
+      await authFetch('/api/host/tim/unlock-question', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ team_no: teamNo })
+      });
+      loadState();
+    }
+
+    async function resetAllScores() {
+      if (confirm('PERINGATAN: Reset skor seluruh tim ke 0?')) {
+        await authFetch('/api/host/tim/reset-skor', { method: 'POST' });
+        loadState();
+      }
+    }
+
+    // ----------------------------------------------------------------------
+    // BANK SOAL CRUD
+    // ----------------------------------------------------------------------
+    function togglePlanetSelectVisibility() {
+      const ronde = document.getElementById('soal-ronde').value;
+      document.getElementById('group-soal-planet').style.display = (ronde === 'planet') ? 'flex' : 'none';
+    }
+
+    const soalTeks = document.getElementById('soal-teks');
+    const soalPreviewArea = document.getElementById('soal-preview-area');
+    soalTeks.addEventListener('input', () => {
+      soalPreviewArea.innerHTML = soalTeks.value || 'Ketik soal di atas untuk melihat preview rumus...';
+      if (window.renderMathInElement) {
+        renderMathInElement(soalPreviewArea, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    });
+
+    async function loadBankSoal() {
+      const mapel = document.getElementById('filter-mapel').value;
+      const ronde = document.getElementById('filter-ronde').value;
+      const planet = document.getElementById('filter-planet').value;
+      const search = document.getElementById('search-soal').value;
+
+      try {
+        const res = await authFetch(`/api/soal?mapel=${encodeURIComponent(mapel)}&ronde=${encodeURIComponent(ronde)}&planet=${encodeURIComponent(planet)}&search=${encodeURIComponent(search)}`);
+        const list = await res.json();
+        renderBankSoalTable(list);
+        populateSoalSelect(list);
+      } catch (e) {}
+    }
+
+    function renderBankSoalTable(list) {
+      const tbody = document.getElementById('bank-soal-tbody');
+      tbody.innerHTML = '';
+
+      list.forEach(q => {
+        const tr = document.createElement('tr');
+        const isCurrent = fullState && fullState.state && fullState.state.soal_aktif_id === q.id;
+
+        tr.innerHTML = `
+          <td>#${q.id}</td>
+          <td><span class="tag ${q.ronde === 'planet' ? 'tag-planet' : 'tag-main'}">${q.ronde || 'neraca'}</span></td>
+          <td>
+            <strong>${q.mapel}</strong>
+            ${q.planet ? `<span class="tag tag-planet" style="margin-left:4px;">🪐 ${q.planet}</span>` : ''}
+          </td>
+          <td style="max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+            ${q.soal}
+          </td>
+          <td><strong>${q.kunci !== undefined ? q.kunci : '-'}</strong> ${q.satuan || ''} (±${q.toleransi})</td>
+          <td style="text-align:right;">
+            <button class="btn btn-success" style="font-size:11px; padding:4px 8px;" onclick="setActiveQuestion(${q.id})">Aktifkan</button>
+            <button class="btn btn-secondary" style="font-size:11px; padding:4px 8px;" onclick="editSoal(${q.id})">Edit</button>
+            <button class="btn btn-danger" style="font-size:11px; padding:4px 8px;" onclick="deleteSoal(${q.id})">Hapus</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populateSoalSelect(list) {
+      const select = document.getElementById('select-soal-aktif');
+      select.innerHTML = '';
+      list.forEach(q => {
+        const opt = document.createElement('option');
+        opt.value = q.id;
+        opt.textContent = `#${q.id} [${q.ronde || 'neraca'}] [${q.mapel}${q.planet ? ' - ' + q.planet : ''}] - ${q.soal.substring(0, 45)}...`;
+        if (fullState && fullState.state && fullState.state.soal_aktif_id === q.id) {
+          opt.selected = true;
+        }
+        select.appendChild(opt);
+      });
+    }
+
+    async function setActiveQuestion(id) {
+      await authFetch('/api/host/question/set-active', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      loadBankSoal();
+      loadState();
+    }
+
+    async function setActiveQuestionFromSelect() {
+      const id = parseInt(document.getElementById('select-soal-aktif').value, 10);
+      if (id) setActiveQuestion(id);
+    }
+
+    async function simpanSoal() {
+      const editId = document.getElementById('soal-edit-id').value;
+      const ronde = document.getElementById('soal-ronde').value;
+      const planet = document.getElementById('soal-planet').value;
+      const mapel = document.getElementById('soal-mapel').value;
+      const kunci = document.getElementById('soal-kunci').value;
+      const satuan = document.getElementById('soal-satuan').value;
+      const toleransi = document.getElementById('soal-toleransi').value;
+      const waktuTampil = document.getElementById('soal-waktu-tampil').value;
+      const waktuKerja = document.getElementById('soal-waktu-kerja').value;
+      const soal = document.getElementById('soal-teks').value;
+      const isCadangan = document.getElementById('soal-is-cadangan').checked ? 1 : 0;
+      const fileInput = document.getElementById('soal-gambar-file');
+
+      if (!soal.trim() || !kunci) {
+        alert('Teks soal dan kunci jawaban wajib diisi!');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('ronde', ronde);
+      formData.append('planet', planet);
+      formData.append('mapel', mapel);
+      formData.append('soal', soal);
+      formData.append('kunci', kunci);
+      formData.append('satuan', satuan);
+      formData.append('toleransi', toleransi);
+      formData.append('waktu_tampil', waktuTampil);
+      formData.append('waktu_kerja', waktuKerja);
+      formData.append('cadangan', isCadangan);
+      if (fileInput.files[0]) formData.append('gambar', fileInput.files[0]);
+
+      const url = editId ? `/api/soal/${editId}` : '/api/soal';
+      const method = editId ? 'PUT' : 'POST';
+
+      try {
+        const res = await authFetch(url, { method, body: formData });
+        const data = await res.json();
+        if (data.success) {
+          alert('Soal berhasil disimpan!');
+          resetFormSoal();
+          loadBankSoal();
+        } else alert(data.message);
+      } catch (e) { alert(e.message); }
+    }
+
+    async function editSoal(id) {
+      try {
+        const res = await authFetch(`/api/soal`);
+        const list = await res.json();
+        const q = list.find(item => item.id === id);
+        if (!q) return;
+
+        document.getElementById('soal-edit-id').value = q.id;
+        document.getElementById('form-soal-title').textContent = `✏️ Edit Soal #${q.id}`;
+        document.getElementById('soal-ronde').value = q.ronde || 'neraca';
+        document.getElementById('soal-planet').value = q.planet || '';
+        togglePlanetSelectVisibility();
+
+        document.getElementById('soal-mapel').value = q.mapel;
+        document.getElementById('soal-kunci').value = q.kunci;
+        document.getElementById('soal-satuan').value = q.satuan;
+        document.getElementById('soal-toleransi').value = q.toleransi;
+        document.getElementById('soal-waktu-tampil').value = q.waktu_tampil;
+        document.getElementById('soal-waktu-kerja').value = q.waktu_kerja;
+        document.getElementById('soal-teks').value = q.soal;
+        document.getElementById('soal-is-cadangan').checked = Boolean(q.cadangan);
+
+        soalPreviewArea.innerHTML = q.soal;
+        if (window.renderMathInElement) {
+          renderMathInElement(soalPreviewArea, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      } catch (e) {}
+    }
+
+    function resetFormSoal() {
+      document.getElementById('soal-edit-id').value = '';
+      document.getElementById('form-soal-title').textContent = '➕ Tambah Soal Baru';
+      document.getElementById('soal-ronde').value = 'neraca';
+      document.getElementById('soal-planet').value = '';
+      togglePlanetSelectVisibility();
+      document.getElementById('soal-kunci').value = '';
+      document.getElementById('soal-satuan').value = '';
+      document.getElementById('soal-teks').value = '';
+      document.getElementById('soal-gambar-file').value = '';
+      document.getElementById('soal-is-cadangan').checked = false;
+      soalPreviewArea.textContent = 'Ketik soal di atas untuk melihat preview rumus...';
+    }
+
+    async function deleteSoal(id) {
+      if (confirm(`Yakin ingin menghapus Soal #${id}?`)) {
+        try {
+          const res = await authFetch(`/api/soal/${id}`, { method: 'DELETE' });
+          const d = await res.json();
+          if (d.success) loadBankSoal();
+          else alert(d.message);
+        } catch (e) { alert(e.message); }
+      }
+    }
+
+    function exportSoalCsv() {
+      window.open('/api/soal/export-csv?pin=' + encodeURIComponent(currentHostPin));
+    }
+
+    async function importSoalCsv(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const res = await authFetch('/api/soal/import-csv', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/csv' },
+            body: e.target.result
+          });
+          const d = await res.json();
+          if (d.success) {
+            alert(`Berhasil mengimpor ${d.count} soal baru!`);
+            loadBankSoal();
+          } else alert(d.message);
+        } catch (err) { alert(err.message); }
+      };
+      reader.readAsText(file);
+    }
+
+    // Settings
+    async function simpanPengaturan() {
+      const poin = document.getElementById('setting-poin').value;
+      const tol = document.getElementById('setting-toleransi').value;
+      const poinTab = document.getElementById('setting-poin-tab').value;
+      const poinMic = document.getElementById('setting-poin-mic').value;
+      const waktuTab = document.getElementById('setting-waktu-tab').value;
+      const waktuMic = document.getElementById('setting-waktu-mic').value;
+      const reuseMode = document.getElementById('setting-reuse-mode').checked ? 1 : 0;
+      const pinBaru = document.getElementById('setting-pin-baru').value;
+
+      try {
+        const res = await authFetch('/api/host/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            poin_soal: poin,
+            toleransi_global: tol,
+            poin_planet_tab: poinTab,
+            poin_planet_mic: poinMic,
+            waktu_planet_tab: waktuTab,
+            waktu_planet_mic: waktuMic,
+            mode_soal_dipakai_ulang: reuseMode,
+            pin_baru: pinBaru
+          })
+        });
+        const d = await res.json();
+        if (d.success) {
+          alert('Pengaturan berhasil diperbarui!');
+          if (pinBaru && pinBaru.length >= 4) {
+            currentHostPin = pinBaru;
+            sessionStorage.setItem('neraca_host_pin', pinBaru);
+            document.getElementById('setting-pin-baru').value = '';
+          }
+          loadState();
+        }
+      } catch (e) { alert(e.message); }
+    }
+
+    // Initialize
+    togglePlanetSelectVisibility();
+    checkAuth();
+    connectWs();
+    loadState();
+    loadBankSoal();
+  </script>
+</body>
+</html>

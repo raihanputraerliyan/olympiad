@@ -1,0 +1,28 @@
+{
+  "name": "neraca-kebenaran",
+  "version": "1.0.0",
+  "description": "Web app Neraca Kebenaran untuk lomba olimpiade sains videotron, tablet buzzer, dan juri",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^4.21.2",
+    "katex": "^0.16.21",
+    "multer": "^1.4.5-lts.1",
+    "ws": "^8.18.0"
+  },
+  "keywords": [
+    "olimpiade",
+    "neraca-kebenaran",
+    "videotron",
+    "websocket",
+    "sqlite"
+  ],
+  "author": "Antigravity",
+  "license": "ISC"
+}

@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Tablet Tim - Neraca Kebenaran & Misi Planet</title>
+  <!-- KaTeX Local Assets for rendering questions on tablet -->
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css">
+  <script src="/vendor/katex/katex.min.js"></script>
+  <script src="/vendor/katex/contrib/auto-render.min.js"></script>
+  <style>
+    :root {
+      --bg: var(--color-bg-dark);
+      --card-bg: var(--color-bg-dark);
+      --card-border: var(--color-text-muted);
+      --text: var(--color-text-on-dark);
+      --text-muted: var(--color-secondary);
+      --primary: var(--color-secondary);
+      --success: var(--color-secondary);
+      --danger: var(--color-primary);
+      --warning: var(--color-accent);
+      --team1: var(--color-primary);
+      --team2: var(--color-secondary);
+      --team3: var(--color-secondary);
+      --team4: var(--color-accent);
+      --team5: var(--color-secondary);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      touch-action: manipulation;
+    }
+
+    /* TOP STATUS BAR */
+    .top-bar {
+      height: 48px;
+      background: color-mix(in srgb, var(--color-bg-dark) 95%, transparent);
+      border-bottom: 2px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      font-size: 14px;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--danger);
+    }
+    .dot.online {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .wakelock-pill {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--color-text-on-dark) 10%, transparent);
+      color: var(--color-secondary);
+      border: 1px solid color-mix(in srgb, var(--color-secondary) 30%, transparent);
+      cursor: pointer;
+    }
+
+    /* ------------------------------------------------------------- */
+    /* SCREEN 1: BUZZER ZONES (RONDE NERACA) – jumlah dinamis */
+    /* ------------------------------------------------------------- */
+    #buzzer-screen {
+      width: 100%;
+      height: calc(100% - 48px);
+      display: grid;
+      grid-template-columns: repeat(var(--zone-count, 5), 1fr);
+      gap: 6px;
+      padding: 6px;
+      background: var(--color-bg-dark);
+    }
+
+    @media (max-width: 768px) {
+      #buzzer-screen {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(var(--zone-count, 5), 1fr);
+      }
+    }
+
+    .buzzer-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+      transition: transform 0.08s ease, filter 0.1s ease;
+      text-align: center;
+      padding: 12px;
+    }
+    .buzzer-zone:active {
+      transform: scale(0.97);
+      filter: brightness(1.3);
+    }
+
+    .zone-disabled {
+      background: var(--color-text-muted) !important;
+      opacity: 0.45;
+      filter: grayscale(1);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .zone-icon {
+      font-size: 54px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 4px 8px color-mix(in srgb, var(--color-bg-dark) 40%, transparent));
+    }
+
+    .zone-team-num {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 6px color-mix(in srgb, var(--color-bg-dark) 50%, transparent);
+    }
+
+    .zone-team-name {
+      font-size: 16px;
+      font-weight: 700;
+      opacity: 0.95;
+      margin-top: 6px;
+      max-width: 90%;
+      word-break: break-word;
+      text-shadow: 0 1px 4px color-mix(in srgb, var(--color-bg-dark) 60%, transparent);
+    }
+
+    .zone-lock-tag {
+      position: absolute;
+      bottom: 14px;
+      background: color-mix(in srgb, var(--color-bg-dark) 70%, transparent);
+      color: var(--color-primary);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--color-primary) 50%, transparent);
+      text-transform: uppercase;
+      display: none;
+    }
+    .zone-disabled .zone-lock-tag { display: block; }
+
+    /* ------------------------------------------------------------- */
+    /* SCREEN 2: NERACA ANSWER ENTRY KEYPAD */
+    /* ------------------------------------------------------------- */
+    #answer-screen {
+      width: 100%;
+      height: calc(100% - 48px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: radial-gradient(circle at center, var(--color-bg-dark) 0%, var(--color-bg-dark) 100%);
+    }
+    #answer-screen.active { display: flex; }
+
+    .answer-card {
+      background: var(--card-bg);
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 30px color-mix(in srgb, var(--color-secondary) 25%, transparent);
+      border-radius: 20px;
+      padding: 24px 30px;
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .turn-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+    }
+
+    .team-badge-large {
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--color-text-on-dark);
+    }
+
+    .input-display {
+      width: 100%;
+      height: 72px;
+      background: var(--color-bg-dark);
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 20px;
+      font-size: 38px;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: 2px;
+      overflow-x: auto;
+    }
+
+    .satuan-hint {
+      font-size: 14px;
+      color: var(--text-muted);
+      align-self: flex-start;
+      margin-top: -8px;
+    }
+
+    /* KEYPAD GRID */
+    .keypad-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .key-btn {
+      height: 60px;
+      background: var(--color-text-muted);
+      border: 1px solid var(--color-text-muted);
+      border-radius: 10px;
+      color: var(--color-text-on-dark);
+      font-size: 26px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.1s;
+      touch-action: manipulation;
+    }
+    .key-btn:active {
+      background: var(--color-text-muted);
+      transform: scale(0.96);
+    }
+    .key-action { background: var(--color-text-muted); color: var(--color-primary); }
+
+    .btn-action-main {
+      width: 100%;
+      height: 68px;
+      background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary) 100%);
+      border: 2px solid var(--color-secondary);
+      box-shadow: 0 0 20px color-mix(in srgb, var(--color-secondary) 40%, transparent);
+      border-radius: 14px;
+      color: var(--color-text-on-dark);
+      font-size: 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 6px;
+      touch-action: manipulation;
+      transition: transform 0.1s;
+    }
+    .btn-action-main:active { transform: scale(0.97); }
+
+    /* ------------------------------------------------------------- */
+    /* SCREEN 3: RONDE 5 MISI PLANET CONTAINER */
+    /* ------------------------------------------------------------- */
+    #planet-screen {
+      width: 100%;
+      height: calc(100% - 48px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: radial-gradient(circle at center, var(--color-secondary) 0%, var(--color-bg-dark) 100%);
+      overflow-y: auto;
+    }
+    #planet-screen.active { display: flex; }
+
+    .planet-step-box {
+      background: var(--card-bg);
+      border: 2px solid var(--color-secondary);
+      box-shadow: 0 0 35px color-mix(in srgb, var(--color-secondary) 30%, transparent);
+      border-radius: 20px;
+      padding: 24px 30px;
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .planet-q-card {
+      background: var(--color-bg-dark);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: var(--color-text-on-dark);
+      max-height: 220px;
+      overflow-y: auto;
+    }
+  </style>
+  <link rel="stylesheet" href="/cosmic-theme.css">
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="status-left">
+      <span class="dot" id="tablet-dot"></span>
+      <span id="tablet-status-text" style="font-weight: 600;">Menghubungkan...</span>
+      <span id="tablet-mode-badge" style="font-size:12px; font-weight:800; padding:2px 8px; border-radius:4px; background:var(--color-bg-dark);">RONDE NERACA</span>
+    </div>
+    <div class="wakelock-pill" id="btn-wakelock" onclick="toggleWakeLock()">
+      🔒 Layar Aktif: Aktifkan
+    </div>
+  </div>
+
+  <!-- SCREEN 1: BUZZER ZONES (RONDE NERACA) – diisi dinamis via JS -->
+  <div id="buzzer-screen">
+  </div>
+
+  <!-- SCREEN 2: NERACA ANSWER ENTRY KEYPAD -->
+  <div id="answer-screen">
+    <div class="answer-card">
+      <div class="turn-banner">
+        <span>GILIRAN MENJAWAB</span>
+        <span class="team-badge-large" id="answering-team-badge">TIM 1</span>
+      </div>
+
+      <div class="input-display" id="input-val">0</div>
+      <div class="satuan-hint" id="satuan-hint">Satuan: -</div>
+
+      <div class="keypad-grid">
+        <button class="key-btn" onclick="pressKey('7')">7</button>
+        <button class="key-btn" onclick="pressKey('8')">8</button>
+        <button class="key-btn" onclick="pressKey('9')">9</button>
+
+        <button class="key-btn" onclick="pressKey('4')">4</button>
+        <button class="key-btn" onclick="pressKey('5')">5</button>
+        <button class="key-btn" onclick="pressKey('6')">6</button>
+
+        <button class="key-btn" onclick="pressKey('1')">1</button>
+        <button class="key-btn" onclick="pressKey('2')">2</button>
+        <button class="key-btn" onclick="pressKey('3')">3</button>
+
+        <button class="key-btn" onclick="pressKey('-')">±</button>
+        <button class="key-btn" onclick="pressKey('0')">0</button>
+        <button class="key-btn" onclick="pressKey('.')">.</button>
+
+        <button class="key-btn key-action" onclick="pressKey('CLEAR')">C</button>
+        <button class="key-btn key-action" style="grid-column: span 2;" onclick="pressKey('BACK')">⌫ HAPUS</button>
+      </div>
+
+      <button class="btn-action-main" id="btn-submit-timbang" onclick="submitTimbang()">
+        <span>⚖️</span>
+        <span>TIMBANG</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: RONDE 5 MISI PLANET -->
+  <div id="planet-screen">
+    <div class="planet-step-box" id="planet-step-box">
+      <!-- Dynamic Planet Steps will be rendered here -->
+    </div>
+  </div>
+
+  <script>
+    // ----------------------------------------------------------------------
+    // WAKE LOCK API
+    // ----------------------------------------------------------------------
+    let wakeLockSentinel = null;
+    async function toggleWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          if (!wakeLockSentinel) {
+            wakeLockSentinel = await navigator.wakeLock.request('screen');
+            document.getElementById('btn-wakelock').textContent = '🔒 Layar Aktif: ON';
+            document.getElementById('btn-wakelock').style.borderColor = 'var(--color-secondary)';
+            document.getElementById('btn-wakelock').style.color = 'var(--color-secondary)';
+          }
+        }
+      } catch (err) {}
+    }
+    window.addEventListener('touchstart', () => { if (!wakeLockSentinel) toggleWakeLock(); }, { once: true });
+
+    // ----------------------------------------------------------------------
+    // WEBSOCKET & STATE
+    // ----------------------------------------------------------------------
+    let ws = null;
+    let currentState = null;
+    let currentAnsweringTeam = null;
+    let currentInputValue = '';
+    let tabSubmitted = false;
+
+    const tabletDot = document.getElementById('tablet-dot');
+    const tabletStatusText = document.getElementById('tablet-status-text');
+    const tabletModeBadge = document.getElementById('tablet-mode-badge');
+
+    const buzzerScreen = document.getElementById('buzzer-screen');
+    const answerScreen = document.getElementById('answer-screen');
+    const planetScreen = document.getElementById('planet-screen');
+    const planetStepBox = document.getElementById('planet-step-box');
+
+    const answeringTeamBadge = document.getElementById('answering-team-badge');
+    const inputDisplay = document.getElementById('input-val');
+    const satuanHint = document.getElementById('satuan-hint');
+
+    const teamColors = ['var(--color-team1)', 'var(--color-team2)', 'var(--color-team3)', 'var(--color-team4)', 'var(--color-team5)', 'var(--color-team6)', 'var(--color-team7)', 'var(--color-team8)', 'var(--color-team9)', 'var(--color-team10)'];
+
+    function connectWs() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}`;
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        tabletDot.className = 'dot online';
+        tabletStatusText.textContent = 'Tablet Terhubung';
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          handleMessage(msg);
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      ws.onclose = () => {
+        tabletDot.className = 'dot';
+        tabletStatusText.textContent = 'Terputus...';
+        setTimeout(connectWs, 2000);
+      };
+    }
+
+    function handleMessage(msg) {
+      if (msg.data) {
+        currentState = msg.data;
+        updateUI(msg.data);
+      }
+
+      if (msg.type === 'BUZZER_WIN') {
+        currentAnsweringTeam = msg.pemenang_no;
+        showAnswerScreen(msg.pemenang_no, msg.pemenang_nama);
+      } else if (msg.type === 'TIMBANG_RESULT') {
+        currentAnsweringTeam = null;
+        showBuzzerScreen();
+      } else if (msg.type === 'QUESTION_CHANGE' || msg.type === 'QUESTION_RESET') {
+        currentAnsweringTeam = null;
+        showBuzzerScreen();
+      } else if (msg.type === 'PLANET_TAB_RESULT') {
+        tabSubmitted = true;
+      }
+    }
+
+    function updateUI(full) {
+      const s = full.state;
+      const teams = full.teams || [];
+      const q = full.activeQuestion;
+      const isPlanet = (s.mode_ronde === 'planet');
+
+      if (isPlanet) {
+        tabletModeBadge.textContent = 'MISI PLANET';
+        tabletModeBadge.style.background = 'var(--color-secondary)';
+
+        buzzerScreen.style.display = 'none';
+        answerScreen.classList.remove('active');
+        planetScreen.classList.add('active');
+
+        renderPlanetTabletUI(s, teams, q);
+      } else {
+        tabletModeBadge.textContent = 'RONDE NERACA';
+        tabletModeBadge.style.background = 'var(--color-bg-dark)';
+
+        planetScreen.classList.remove('active');
+
+        // Build zones dynamically if needed, then update state
+        buildBuzzerZones(teams);
+
+        // Update team names and lock state
+        teams.forEach(t => {
+          const zoneEl = document.getElementById(`zone-${t.id}`);
+          const nameTextEl = document.getElementById(`name-team-${t.id}`);
+          if (nameTextEl) nameTextEl.textContent = t.nama;
+          if (zoneEl) {
+            if (t.terkunci || !s.buzzer_terbuka) zoneEl.classList.add('zone-disabled');
+            else zoneEl.classList.remove('zone-disabled');
+          }
+        });
+
+        if (q && q.satuan) satuanHint.textContent = `Satuan: ${q.satuan}`;
+        else satuanHint.textContent = 'Satuan: Angka murni';
+
+        if (s.buzzer_pemenang && !currentAnsweringTeam) {
+          const t = teams.find(item => item.no === s.buzzer_pemenang);
+          currentAnsweringTeam = s.buzzer_pemenang;
+          showAnswerScreen(s.buzzer_pemenang, t ? t.nama : `Tim ${s.buzzer_pemenang}`);
+        } else if (!s.buzzer_pemenang && currentAnsweringTeam) {
+          currentAnsweringTeam = null;
+          showBuzzerScreen();
+        }
+      }
+    }
+
+    // ----------------------------------------------------------------------
+    // PLANET TABLET VIEW RENDERER (MEJA TAB & MEJA MIC)
+    // ----------------------------------------------------------------------
+    function renderPlanetTabletUI(state, teams, question) {
+      const teamNo = state.tim_giliran || 1;
+      const t = teams.find(item => item.no === teamNo) || { nama: `Tim ${teamNo}` };
+      const step = state.planet_step || 1;
+
+      if (step === 1) {
+        // Step 1: Turn announcement
+        planetStepBox.innerHTML = `
+          <div style="text-align:center;">
+            <div style="font-size:54px; margin-bottom:8px;">🪐</div>
+            <h2 style="font-size:24px; color:var(--color-secondary); text-transform:uppercase;">Ronde 5: Misi Planet</h2>
+            <div style="font-size:32px; font-weight:900; color:var(--color-text-on-dark); margin:14px 0;">GILIRAN: TIM ${teamNo}</div>
+            <p style="font-size:16px; color:var(--text-muted);">
+              Satu tim terbagi menjadi <strong>Meja TAB</strong> dan <strong>Meja MIC</strong>.<br>
+              Menunggu Dewan Juri membuka soal Meja TAB...
+            </p>
+          </div>
+        `;
+      } else if (step === 2) {
+        // Step 2: Meja TAB answering mode
+        const isLocked = Boolean(state.hasil_planet_tab || tabSubmitted);
+        planetStepBox.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:16px; font-weight:800; color:var(--color-secondary);">🪐 MEJA TAB: TIM ${teamNo}</span>
+            <span style="font-size:13px; padding:3px 10px; border-radius:999px; background:var(--color-secondary); color:var(--color-secondary); font-weight:700;">
+              POIN: +${state.poin_planet_tab || 20}
+            </span>
+          </div>
+
+          <div class="planet-q-card" id="planet-tab-q-body">
+            ${question ? question.soal : 'Memuat soal Meja TAB...'}
+          </div>
+
+          <div class="input-display" id="planet-input-val">${currentInputValue || '0'}</div>
+          <div class="satuan-hint">Satuan: ${question && question.satuan ? question.satuan : 'Angka murni'}</div>
+
+          <div class="keypad-grid">
+            <button class="key-btn" onclick="pressPlanetKey('7')" ${isLocked ? 'disabled' : ''}>7</button>
+            <button class="key-btn" onclick="pressPlanetKey('8')" ${isLocked ? 'disabled' : ''}>8</button>
+            <button class="key-btn" onclick="pressPlanetKey('9')" ${isLocked ? 'disabled' : ''}>9</button>
+
+            <button class="key-btn" onclick="pressPlanetKey('4')" ${isLocked ? 'disabled' : ''}>4</button>
+            <button class="key-btn" onclick="pressPlanetKey('5')" ${isLocked ? 'disabled' : ''}>5</button>
+            <button class="key-btn" onclick="pressPlanetKey('6')" ${isLocked ? 'disabled' : ''}>6</button>
+
+            <button class="key-btn" onclick="pressPlanetKey('1')" ${isLocked ? 'disabled' : ''}>1</button>
+            <button class="key-btn" onclick="pressPlanetKey('2')" ${isLocked ? 'disabled' : ''}>2</button>
+            <button class="key-btn" onclick="pressPlanetKey('3')" ${isLocked ? 'disabled' : ''}>3</button>
+
+            <button class="key-btn" onclick="pressPlanetKey('-')" ${isLocked ? 'disabled' : ''}>±</button>
+            <button class="key-btn" onclick="pressPlanetKey('0')" ${isLocked ? 'disabled' : ''}>0</button>
+            <button class="key-btn" onclick="pressPlanetKey('.')" ${isLocked ? 'disabled' : ''}>.</button>
+
+            <button class="key-btn key-action" onclick="pressPlanetKey('CLEAR')" ${isLocked ? 'disabled' : ''}>C</button>
+            <button class="key-btn key-action" style="grid-column: span 2;" onclick="pressPlanetKey('BACK')" ${isLocked ? 'disabled' : ''}>⌫ HAPUS</button>
+          </div>
+
+          <button class="btn-action-main" id="btn-planet-submit" onclick="submitPlanetTab(${teamNo})" ${isLocked ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+            ${isLocked ? (state.hasil_planet_tab ? 'HASIL: ' + state.hasil_planet_tab : 'TERKIRIM (MENUNGGU HASIL)') : '🚀 SUBMIT JAWABAN (MEJA TAB)'}
+          </button>
+        `;
+
+        const qBody = document.getElementById('planet-tab-q-body');
+        if (qBody && window.renderMathInElement) {
+          renderMathInElement(qBody, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        }
+      } else if (step === 3) {
+        // Step 3: Meja MIC selecting planet
+        if (state.hasil_planet_tab === 'BENAR') {
+          planetStepBox.innerHTML = `
+            <div style="text-align:center; padding:20px 0;">
+              <div style="font-size:54px; margin-bottom:8px;">✅</div>
+              <h2 style="font-size:26px; color:var(--color-secondary); font-weight:900;">MEJA TAB BENAR! (+${state.poin_planet_tab || 20} POIN)</h2>
+              <p style="font-size:18px; color:var(--color-text-on-dark); margin-top:14px;">
+                Silakan <strong>Meja MIC</strong> memilih 1 planet dari 8 planet di depan Dewan Juri.
+              </p>
+            </div>
+          `;
+        } else {
+          planetStepBox.innerHTML = `
+            <div style="text-align:center; padding:20px 0;">
+              <div style="font-size:54px; margin-bottom:8px;">❌</div>
+              <h2 style="font-size:26px; color:var(--color-accent); font-weight:900;">MEJA TAB SALAH / WAKTU HABIS</h2>
+              <p style="font-size:18px; color:var(--color-text-muted); margin-top:14px;">
+                Papan Tata Surya terkunci. Giliran Tim ${teamNo} telah selesai.
+              </p>
+            </div>
+          `;
+        }
+      } else if (step === 4) {
+        // Step 4: Meja MIC speaking question
+        planetStepBox.innerHTML = `
+          <div style="text-align:center; padding:20px 0;">
+            <div style="font-size:54px; margin-bottom:8px;">🎤</div>
+            <h2 style="font-size:24px; color:var(--color-accent); font-weight:900;">MEJA MIC: MISI ${state.planet_terpilih || 'PLANET'}</h2>
+            <p style="font-size:18px; color:var(--color-text-on-dark); margin-top:12px;">
+              Pemegang mic sedang menjawab lisan ke Dewan Juri.<br>
+              Waktu: 60 detik (dinilai langsung oleh juri).
+            </p>
+          </div>
+        `;
+      } else if (step === 5) {
+        // Step 5: Completed
+        planetStepBox.innerHTML = `
+          <div style="text-align:center; padding:20px 0;">
+            <div style="font-size:54px; margin-bottom:8px;">🏁</div>
+            <h2 style="font-size:26px; color:var(--color-text-on-dark); font-weight:900;">GILIRAN TIM ${teamNo} SELESAI</h2>
+            <p style="font-size:16px; color:var(--color-text-muted); margin-top:10px;">
+              Hasil TAB: <strong>${state.hasil_planet_tab || '-'}</strong> |
+              Hasil MIC: <strong>${state.hasil_planet_mic || '-'}</strong>
+            </p>
+          </div>
+        `;
+      }
+    }
+
+    function pressPlanetKey(key) {
+      if (navigator.vibrate) navigator.vibrate([30]);
+
+      if (key === 'CLEAR') {
+        currentInputValue = '';
+      } else if (key === 'BACK') {
+        currentInputValue = currentInputValue.slice(0, -1);
+      } else if (key === '-') {
+        if (currentInputValue.startsWith('-')) currentInputValue = currentInputValue.slice(1);
+        else currentInputValue = '-' + currentInputValue;
+      } else if (key === '.') {
+        if (!currentInputValue.includes('.')) {
+          currentInputValue += (currentInputValue === '' ? '0.' : '.');
+        }
+      } else {
+        if (currentInputValue === '0') currentInputValue = key;
+        else currentInputValue += key;
+      }
+
+      const inputEl = document.getElementById('planet-input-val');
+      if (inputEl) inputEl.textContent = currentInputValue || '0';
+    }
+
+    function submitPlanetTab(teamNo) {
+      if (!currentInputValue || isNaN(parseFloat(currentInputValue))) {
+        alert('Masukkan angka jawaban Meja TAB terlebih dahulu!');
+        return;
+      }
+
+      if (navigator.vibrate) navigator.vibrate([120]);
+
+      const val = parseFloat(currentInputValue);
+      tabSubmitted = true;
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'PLANET_TAB_SUBMIT',
+          payload: {
+            team: teamNo,
+            jawaban: val
+          }
+        }));
+      }
+
+      // Also send via REST fallback
+      fetch('/api/planet/tab-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ team: teamNo, jawaban: val })
+      }).catch(() => {});
+    }
+
+    // ----------------------------------------------------------------------
+    // RONDE NERACA FUNCTIONS
+    // ----------------------------------------------------------------------
+    // Palet warna untuk zona buzzer (konsisten dengan display.html)
+    const ZONE_COLORS = [
+      ['var(--color-team1)', 'var(--color-team1-dark)'], ['var(--color-team2)', 'var(--color-team2-dark)'],
+      ['var(--color-team3)', 'var(--color-team3-dark)'], ['var(--color-team4)', 'var(--color-team4-dark)'],
+      ['var(--color-team5)', 'var(--color-team5-dark)'], ['var(--color-team6)', 'var(--color-team6-dark)'],
+      ['var(--color-team7)', 'var(--color-team7-dark)'], ['var(--color-team8)', 'var(--color-team8-dark)'],
+      ['var(--color-team9)', 'var(--color-team9-dark)'], ['var(--color-team10)', 'var(--color-team10-dark)']
+    ];
+
+    let builtZoneIds = []; // track which zones we've built
+
+    function buildBuzzerZones(teams) {
+      const peserta = teams.filter(t => t.aktif && t.peserta_neraca);
+      const buzzerScreen = document.getElementById('buzzer-screen');
+
+      // Check if already built for same team ids
+      const ids = peserta.map(t => t.id).join(',');
+      if (builtZoneIds.join(',') === ids) return; // no rebuild needed
+      builtZoneIds = peserta.map(t => t.id);
+
+      buzzerScreen.innerHTML = '';
+      buzzerScreen.style.setProperty('--zone-count', peserta.length);
+
+      peserta.forEach((t, idx) => {
+        const [c1, c2] = ZONE_COLORS[idx % ZONE_COLORS.length];
+        const zone = document.createElement('div');
+        zone.className = 'buzzer-zone';
+        zone.id = `zone-${t.id}`;
+        zone.dataset.team = t.id;
+        zone.style.background = `linear-gradient(180deg, ${c1} 0%, ${c2} 100%)`;
+        zone.innerHTML = `
+          <div class="zone-icon">🚨</div>
+          <div class="zone-team-num">TIM ${t.id}</div>
+          <div class="zone-team-name" id="name-team-${t.id}">${t.nama}</div>
+          <div class="zone-lock-tag" id="tag-lock-${t.id}">TERKUNCI</div>
+        `;
+        zone.addEventListener('touchstart', (e) => { e.preventDefault(); pressBuzzer(t.id); }, { passive: false });
+        zone.addEventListener('click', (e) => { e.preventDefault(); pressBuzzer(t.id); });
+        buzzerScreen.appendChild(zone);
+      });
+    }
+
+    function pressBuzzer(teamNo) {
+      if (navigator.vibrate) navigator.vibrate([80]);
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'BUZZER_PRESS',
+          payload: { team: teamNo, timestamp: Date.now() }
+        }));
+      }
+    }
+
+    function showAnswerScreen(teamNo, teamNama) {
+      currentInputValue = '';
+      inputDisplay.textContent = '0';
+      answeringTeamBadge.textContent = `TIM ${teamNo}: ${teamNama}`;
+      answeringTeamBadge.style.backgroundColor = teamColors[teamNo % teamColors.length];
+      buzzerScreen.style.display = 'none';
+      answerScreen.classList.add('active');
+    }
+
+    function showBuzzerScreen() {
+      currentInputValue = '';
+      answerScreen.classList.remove('active');
+      buzzerScreen.style.display = 'grid';
+    }
+
+    function pressKey(key) {
+      if (navigator.vibrate) navigator.vibrate([30]);
+      if (key === 'CLEAR') currentInputValue = '';
+      else if (key === 'BACK') currentInputValue = currentInputValue.slice(0, -1);
+      else if (key === '-') {
+        if (currentInputValue.startsWith('-')) currentInputValue = currentInputValue.slice(1);
+        else currentInputValue = '-' + currentInputValue;
+      } else if (key === '.') {
+        if (!currentInputValue.includes('.')) currentInputValue += (currentInputValue === '' ? '0.' : '.');
+      } else {
+        if (currentInputValue === '0') currentInputValue = key;
+        else currentInputValue += key;
+      }
+      inputDisplay.textContent = currentInputValue || '0';
+    }
+
+    function submitTimbang() {
+      if (!currentInputValue || isNaN(parseFloat(currentInputValue))) {
+        alert('Masukkan angka jawaban terlebih dahulu!');
+        return;
+      }
+      if (navigator.vibrate) navigator.vibrate([120]);
+      if (ws && ws.readyState === WebSocket.OPEN && currentAnsweringTeam) {
+        ws.send(JSON.stringify({
+          type: 'TIMBANG_SUBMIT',
+          payload: {
+            team: currentAnsweringTeam,
+            jawaban: parseFloat(currentInputValue)
+          }
+        }));
+      }
+    }
+
+    // Connect WebSocket
+    connectWs();
+  </script>
+</body>
+</html>

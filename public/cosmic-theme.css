@@ -1,0 +1,521 @@
+:root {
+  --color-primary: #3B1F8F;
+  --color-secondary: #8B6FD6;
+  --color-accent: #F5C542;
+  --color-primary-hover: #2E176F;
+  --color-accent-hover: #E4B52E;
+  --color-team1: #3B1F8F;
+  --color-team2: #4A2D9A;
+  --color-team3: #583AA5;
+  --color-team4: #6648B0;
+  --color-team5: #7456BB;
+  --color-team6: #52358F;
+  --color-team7: #5F42A1;
+  --color-team8: #6B4EAE;
+  --color-team9: #7659BB;
+  --color-team10: #795DC0;
+  --color-team1-dark: #2A156C;
+  --color-team2-dark: #372174;
+  --color-team3-dark: #442C7C;
+  --color-team4-dark: #503786;
+  --color-team5-dark: #5C4290;
+  --color-team6-dark: #3A266C;
+  --color-team7-dark: #44317A;
+  --color-team8-dark: #4D3A86;
+  --color-team9-dark: #574492;
+  --color-team10-dark: #614E9D;
+  --color-bg: #F6F3FF;
+  --color-bg-dark: #14082E;
+  --color-text: #1E1238;
+  --color-text-on-dark: #FFFFFF;
+  --color-text-muted: #5F5279;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #EEE8FB;
+  --color-border: #D9CFF0;
+  --color-shadow: rgba(59, 31, 143, 0.14);
+  --color-overlay: rgba(20, 8, 46, 0.88);
+  --color-white-soft: rgba(255, 255, 255, 0.12);
+  --color-white-border: rgba(255, 255, 255, 0.28);
+  --color-white-hover: rgba(255, 255, 255, 0.2);
+  --color-primary-soft: rgba(59, 31, 143, 0.1);
+  --color-secondary-soft: rgba(139, 111, 214, 0.16);
+  --color-accent-soft: rgba(245, 197, 66, 0.22);
+  --bg: var(--color-bg);
+  --card-bg: var(--color-surface);
+  --card-border: var(--color-border);
+  --text: var(--color-text);
+  --text-muted: var(--color-text-muted);
+  --primary: var(--color-primary);
+  --primary-hover: var(--color-primary-hover);
+  --success: var(--color-primary);
+  --danger: var(--color-primary);
+  --warning: var(--color-accent);
+  --purple: var(--color-secondary);
+  --team1: var(--color-team1);
+  --team2: var(--color-team2);
+  --team3: var(--color-team3);
+  --team4: var(--color-team4);
+  --team5: var(--color-team5);
+  --team6: var(--color-team6);
+  --team7: var(--color-team7);
+  --team8: var(--color-team8);
+  --team9: var(--color-team9);
+  --team10: var(--color-team10);
+}
+
+* {
+  scrollbar-color: var(--color-secondary) var(--color-surface-alt);
+}
+
+body,
+html {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+header,
+.top-bar,
+.tabs-bar,
+footer {
+  background-color: var(--color-primary) !important;
+  color: var(--color-text-on-dark);
+}
+
+header *,
+.top-bar *,
+.tabs-bar *,
+footer * {
+  color: var(--color-text-on-dark);
+}
+
+.brand-title {
+  background-image: linear-gradient(135deg, var(--color-primary), var(--color-primary)) !important;
+}
+
+header .brand-title {
+  background-image: linear-gradient(135deg, var(--color-text-on-dark), var(--color-text-on-dark)) !important;
+}
+
+header .title {
+  color: var(--color-text-on-dark);
+}
+
+header .badge-mode,
+header #badge-giliran-tim,
+#planet-board-status-badge {
+  background: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+  color: var(--color-bg-dark) !important;
+}
+
+.view-card,
+.tips-box,
+.timer-card,
+.question-card,
+.scale-card,
+.leaderboard-card,
+.team-rank-item,
+.planet-tile,
+.card,
+.answer-card,
+.planet-step-box,
+.live-status-hero {
+  background-color: var(--color-surface) !important;
+  border-color: var(--color-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px var(--color-shadow);
+  color: var(--color-text);
+}
+
+.view-card-title,
+.view-card-desc,
+.tips-box,
+.tips-box strong,
+.question-body,
+.team-name,
+.planet-name,
+.rank-number,
+.hero-stat-val,
+.hero-stat-label,
+.card-title,
+.view-card,
+.team-rank-item,
+.planet-tile,
+.answer-card,
+.planet-step-box {
+  color: var(--color-text);
+}
+
+.view-card:hover {
+  border-color: var(--color-secondary);
+  box-shadow: 0 12px 30px var(--color-secondary-soft);
+}
+
+.view-card-badge,
+.badge-mode,
+.phase-badge,
+.scale-status-badge,
+.status-summary-tag,
+.planet-status-tag,
+.pin-status-pill,
+.wakelock-pill {
+  background: var(--color-secondary-soft);
+  border-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.title,
+.card-title,
+.question-number,
+.scale-title,
+.leaderboard-title,
+.rank-score,
+.timer-digits,
+.turn-banner,
+.input-display {
+  color: var(--color-primary);
+}
+
+.tab-btn.active {
+  color: var(--color-text-on-dark);
+  border-bottom-color: var(--color-accent);
+}
+
+.tab-btn,
+.nav-btn,
+.btn-fs {
+  color: var(--color-text-on-dark);
+}
+
+.nav-btn,
+.btn-fs {
+  background: var(--color-white-soft);
+  border-color: var(--color-white-border);
+}
+
+.nav-btn:hover,
+.btn-fs:hover {
+  background: var(--color-white-hover);
+}
+
+.btn-primary,
+.btn-success,
+.btn-warning,
+.btn-purple,
+.btn-action-main {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--color-bg-dark) !important;
+  box-shadow: 0 4px 12px var(--color-accent-soft);
+}
+
+.btn-primary:hover,
+.btn-success:hover,
+.btn-warning:hover,
+.btn-purple:hover,
+.btn-action-main:hover {
+  background: var(--color-accent-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px var(--color-shadow);
+}
+
+.btn-secondary,
+.btn-danger,
+.key-btn,
+.key-action {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-text-on-dark) !important;
+}
+
+.btn-secondary:hover,
+.btn-danger:hover,
+.key-btn:active {
+  background: var(--color-primary-hover) !important;
+}
+
+.mode-toggle-container,
+input[type="text"],
+input[type="number"],
+input[type="password"],
+textarea,
+select,
+.input-display {
+  background-color: var(--color-surface-alt) !important;
+  border-color: var(--color-border);
+  color: var(--color-text) !important;
+}
+
+.mode-btn.active,
+.btn-planet-pick {
+  background: var(--color-primary) !important;
+  border-color: var(--color-secondary) !important;
+  color: var(--color-text-on-dark) !important;
+}
+
+.btn-planet-pick:hover:not(:disabled) {
+  background: var(--color-primary) !important;
+}
+
+.planet-board-card,
+#answer-screen,
+#planet-screen {
+  background: linear-gradient(135deg, var(--color-bg), var(--color-surface-alt)) !important;
+  border-color: var(--color-secondary);
+}
+
+.rank-1,
+.planet-tile.active-selected {
+  background: var(--color-accent-soft) !important;
+  border-color: var(--color-accent) !important;
+}
+
+.rank-1 .rank-number,
+.rank-score,
+.rank-1 .rank-score {
+  color: var(--color-primary);
+}
+
+.scale-status-badge.balanced,
+.scale-status-badge.tilted,
+.tag-green,
+.tag-red,
+.tag-yellow,
+.tag-avail,
+.tag-taken,
+.status-summary-label {
+  background: var(--color-secondary-soft);
+  border-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.buzzer-alert-overlay,
+.curtain-overlay,
+.planet-locked-overlay {
+  background: var(--color-overlay);
+}
+
+.buzzer-alert-box {
+  background: linear-gradient(135deg, var(--color-bg-dark), var(--color-primary));
+  border-color: var(--color-secondary);
+}
+
+.live-status-hero {
+  background: linear-gradient(135deg, var(--color-bg-dark), var(--color-primary)) !important;
+  border-color: var(--color-secondary);
+}
+
+.live-status-hero .hero-stat-label,
+.live-status-hero .hero-stat-val {
+  color: var(--color-text-on-dark);
+}
+
+.buzzer-alert-title,
+.buzzer-alert-team,
+.curtain-title,
+.curtain-subtitle {
+  color: var(--color-text-on-dark);
+}
+
+code {
+  background: var(--color-surface-alt);
+  color: var(--color-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #14082E;
+    --color-text: #FFFFFF;
+    --color-text-muted: #D1C6E7;
+    --color-surface: #21143F;
+    --color-surface-alt: #2B1D4B;
+    --color-border: #493768;
+    --color-shadow: rgba(0, 0, 0, 0.34);
+    --color-primary-soft: rgba(139, 111, 214, 0.18);
+    --color-secondary-soft: rgba(139, 111, 214, 0.2);
+  }
+
+  .view-card,
+  .tips-box,
+  .timer-card,
+  .question-card,
+  .scale-card,
+  .leaderboard-card,
+  .team-rank-item,
+  .planet-tile,
+  .card,
+  .answer-card,
+  .planet-step-box,
+  .live-status-hero {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text);
+  }
+
+  .view-card-title,
+  .view-card-desc,
+  .tips-box,
+  .tips-box strong,
+  .question-body,
+  .team-name,
+  .planet-name,
+  .rank-number,
+  .hero-stat-val,
+  .hero-stat-label,
+  .card-title,
+  .view-card,
+  .team-rank-item,
+  .planet-tile,
+  .answer-card,
+  .planet-step-box {
+    color: var(--color-text);
+  }
+
+  .title,
+  .card-title,
+  .question-number,
+  .scale-title,
+  .leaderboard-title,
+  .rank-score,
+  .timer-digits,
+  .turn-banner,
+  .input-display {
+    color: var(--color-secondary);
+  }
+
+  .view-card-badge,
+  .badge-mode,
+  .phase-badge,
+  .scale-status-badge,
+  .status-summary-tag,
+  .planet-status-tag,
+  .pin-status-pill,
+  .wakelock-pill,
+  .scale-status-badge.balanced,
+  .scale-status-badge.tilted,
+  .tag-green,
+  .tag-red,
+  .tag-yellow,
+  .tag-avail,
+  .tag-taken,
+  .status-summary-label {
+    color: var(--color-text);
+  }
+
+  .mode-toggle-container,
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  textarea,
+  select,
+  .input-display {
+    background-color: var(--color-surface-alt) !important;
+    color: var(--color-text) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 10px 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  header .header-left {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .title {
+    font-size: clamp(15px, 4vw, 20px);
+  }
+
+  .header-right {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tabs-bar {
+    overflow-x: auto;
+    padding: 0 12px;
+  }
+
+  .tab-btn {
+    flex: 0 0 auto;
+    padding: 12px;
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+
+  .grid-2 > * {
+    min-width: 0;
+  }
+
+  .tab-content select,
+  .tab-content input,
+  .tab-content textarea {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .tab-content .card :is(div, label) {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .tab-content select {
+    width: 100%;
+  }
+
+  .tab-content [style*="display:flex"] {
+    flex-wrap: wrap;
+  }
+
+  .timer-btn-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .buzzer-manual-grid,
+  .host-planet-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .live-status-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .live-status-hero > * {
+    max-width: 100%;
+  }
+
+  .header-right > * {
+    max-width: 100%;
+  }
+
+  .card,
+  .view-card,
+  .answer-card,
+  .planet-step-box {
+    padding: 18px;
+  }
+
+  .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+
+  .left-column,
+  .right-column {
+    min-width: 0;
+  }
+}
